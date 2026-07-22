@@ -1,0 +1,46 @@
+[project]
+name = "zoom1-dialogue-tts"
+version = "0.1.0"
+description = "Zoom1-like two-speaker Japanese stereo dialogue synthesis with FireRedTTS-2"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+dependencies = [
+    "torch==2.7.1",
+    "torchaudio==2.7.1",
+    "torchvision==0.22.1",
+    "torchao==0.10.0",
+    "torchtune",
+    "transformers<5",
+    "einops",
+    "librosa",
+    "soundfile",
+    "huggingface-hub>=0.34,<1.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+zoom1-dialogue-tts = "zoom1_dialogue_tts.cli:main"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["zoom1_dialogue_tts*", "fireredtts2*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.uv.sources]
+torch = {index = "pytorch-cu126"}
+torchaudio = {index = "pytorch-cu126"}
+torchvision = {index = "pytorch-cu126"}

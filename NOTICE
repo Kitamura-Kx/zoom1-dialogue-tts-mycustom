@@ -1,0 +1,14 @@
+Zoom1 Dialogue TTS
+Copyright 2026 LLM-jp Dialogue Working Group
+
+This repository vendors the inference-only `fireredtts2` Python package from
+FireRedTTS-2, upstream commit 404f3f61d25bb4804859b588a6a734bf8468090c:
+https://github.com/FireRedTeam/FireRedTTS2
+FireRedTTS-2 is licensed under the Apache License 2.0. The upstream source is
+unmodified except for adding fireredtts2/utils/__init__.py so standard Python
+packaging includes that module.
+
+The default model checkpoint is hosted separately at:
+https://huggingface.co/kobas-lab/fireredtts2-zoom1-dialogue-ja
+
+No Zoom1 source audio or speaker prompt audio is distributed in this repository.
