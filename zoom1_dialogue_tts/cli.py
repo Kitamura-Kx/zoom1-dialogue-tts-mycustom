@@ -25,6 +25,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--cache-dir", default=None)
     parser.add_argument("--prompt-s1", nargs=2, metavar=("WAV", "TRANSCRIPT"))
     parser.add_argument("--prompt-s2", nargs=2, metavar=("WAV", "TRANSCRIPT"))
+    parser.add_argument("--turn-timing", choices=["stat", "vap", "none"], default="stat",
+                        help="turn gaps/overlaps: Zoom1 statistics, VAP SHIFT JSON, or sequential")
+    parser.add_argument("--turn-vap-json",
+                        help="VAP turn timing [{turn_index, offset_ms, score}, ...]")
     parser.add_argument("--backchannels", choices=["stat", "vap", "none"], default="stat",
                         help="backchannel timing: Zoom1 statistics, VAP JSON, or disabled")
     parser.add_argument("--vap-json", help="VAP points [{time, listener_channel, score}, ...]")
@@ -51,6 +55,8 @@ def main(argv: list[str] | None = None) -> None:
         output_path=Path(args.output),
         prompts=prompts,
         timing=TimingConfig(seed=args.seed),
+        turn_timing=args.turn_timing,
+        turn_vap_json=args.turn_vap_json,
         backchannels=args.backchannels,
         vap_json=args.vap_json,
         bc_per_minute=args.bc_per_minute,

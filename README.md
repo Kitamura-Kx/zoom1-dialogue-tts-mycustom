@@ -91,6 +91,53 @@ uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap.wav \
 VAP検出器はMaAIとPyAudioの環境制約があるため、本パッケージの標準依存には含めていません。
 まず統計配置で利用でき、VAP環境がある場合だけ予測JSONを差し替えられる構成です。
 
+## ターン交替タイミング
+
+通常ターンの間・重なりもVAPの`p_now`/`p_future`で文脈依存化できます。VAPが次話者への
+SHIFTをターン末尾より前に予測した境界は重ね、現在話者の継続を予測した境界には間を置きます。
+予測がない境界だけZoom1統計へfallbackし、短いターンへの過剰な食い込みは自動で制限します。
+
+```bash
+# 1. 同じseedでVAP解析用のターン分離音声を作る
+uv run zoom1-dialogue-tts examples/dialogue.txt -o out/base.wav \
+  --turn-timing none --backchannels none --seed 0
+
+# 2. MaAIを導入したVAP環境で境界ごとのFTOを予測する
+python tools/vap_turn_timing.py \
+  out/base.wav out/base.manifest.json out/vap_turns.json \
+  --save-trace out/vap_trace.json
+
+# 3. 同じモデル・台本・声・seedで文脈依存FTOを適用する
+uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_dialogue.wav \
+  --turn-timing vap --turn-vap-json out/vap_turns.json --seed 0
+```
+
+`vap_turns.json`は次の形式です。負値が重なり、正値が間です。
+
+```json
+[
+  {"turn_index": 1, "offset_ms": -320.0, "score": 0.61, "source": "vap-shift"},
+  {"turn_index": 2, "offset_ms": 180.0, "score": 0.24, "source": "vap-shift"}
+]
+```
+
+MaAIはPyAudioなどの環境制約があるため標準依存には含めていません。保存したVAP traceを
+`--trace-json`で再利用すれば、モデルを再実行せず閾値を比較できます。従来の統計FTOは
+`--turn-timing stat`、重なりなしは`--turn-timing none`です。
+
+PortAudioを導入できない計算ノードでは、MaAIを別環境へ依存解決なしで入れてください。
+本ツールはWAV解析時にPyAudioを自動スタブ化するため、マイク関連パッケージは不要です。
+
+```bash
+uv venv --python 3.12 .venv-vap
+uv pip install --python .venv-vap/bin/python --no-deps maai
+uv pip install --python .venv-vap/bin/python \
+  torch torchaudio numpy soundfile librosa einops rich matplotlib scipy \
+  transformers==5.5.3 huggingface-hub pygame
+.venv-vap/bin/python tools/vap_turn_timing.py \
+  out/base.wav out/base.manifest.json out/vap_turns.json
+```
+
 ## モデルvariant
 
 ```bash
@@ -118,7 +165,7 @@ uv run zoom1-dialogue-tts examples/dialogue.txt --variant keep -o out/keep.wav
 
 1. FireRedTTS-2 Zoom1 fine-tuneで各ターンを文脈付き生成
 2. ターンをS1=左、S2=右へ分離
-3. Zoom1由来のFTO分布から、話者交代ごとの間または重なりをサンプリング
+3. VAP SHIFT予測、またはZoom1由来のFTO分布から、話者交代ごとの間・重なりを決定
 4. 統計配置またはVAP指定時刻に、聞き手と同じ声の相槌を挿入
 5. ステレオWAVと再現用manifestを保存
 
@@ -131,7 +178,8 @@ FireRedTTS-2の学習コード、デモ、Docker資産は同梱しません。�
 - FireRedTTS-2は逐次的にターンを生成します。重なりと相槌は生成後の時間編集であり、
   full-duplexモデルのように両話者を同時生成しているわけではありません。
 - 「うん」「はい」以外のおうむ返しや意味のある割り込み内容は、入力台本に含める必要があります。
-- VAPは相槌時刻にのみ利用します。通常ターンの食い込みはZoom1統計から決まります。
+- VAP SHIFTを使わない既定設定では、通常ターンの食い込みはZoom1統計から決まります。
+- VAP SHIFTは別環境での二段階推論です。現時点ではFireRedTTS-2推論と同時実行しません。
 - 参照声には、本人の同意と利用許諾がある音声だけを使用してください。
 - 約3分を超える長い台本ではFireRedTTS-2のコンテキスト上限に達する可能性があります。
 

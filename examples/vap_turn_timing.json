@@ -1,0 +1,7 @@
+[
+  {"turn_index": 1, "offset_ms": -500.0, "score": 0.6332, "event": "shift", "source": "vap-shift"},
+  {"turn_index": 2, "offset_ms": -120.0, "score": 0.1510, "event": "shift", "source": "vap-shift"},
+  {"turn_index": 3, "offset_ms": 448.7, "score": 0.0061, "event": "hold", "source": "vap-shift"},
+  {"turn_index": 4, "offset_ms": -160.0, "score": 0.4423, "event": "shift", "source": "vap-shift"},
+  {"turn_index": 5, "offset_ms": 269.2, "score": 0.2466, "event": "hold", "source": "vap-shift"}
+]

@@ -6,7 +6,13 @@ import random
 from pathlib import Path
 
 from .script import Turn
-from .timing import TimingConfig, load_vap_points, sample_onsets
+from .timing import (
+    TimingConfig,
+    apply_turn_timing,
+    load_turn_timing,
+    load_vap_points,
+    sample_onsets,
+)
 
 SAMPLE_RATE = 24000
 CHANNEL = {"[S1]": 0, "[S2]": 1}
@@ -133,6 +139,7 @@ def _assemble(generated, onsets, banks, vap_points, seed):
 
 def synthesize(model_dir: Path, turns: list[Turn], output_path: Path,
                prompts: list[tuple[str, str, str]], timing: TimingConfig,
+               turn_timing: str, turn_vap_json: str | None,
                backchannels: str, vap_json: str | None, bc_per_minute: float,
                temperature: float, topk: int,
                max_turn_ms: float) -> Path:
@@ -150,7 +157,39 @@ def synthesize(model_dir: Path, turns: list[Turn], output_path: Path,
     for turn, length in zip(generated, lengths):
         turn["base_onset"] = base / SAMPLE_RATE
         base += length
-    onsets = sample_onsets(generated, lengths, SAMPLE_RATE, timing)
+    statistical_onsets = sample_onsets(generated, lengths, SAMPLE_RATE, timing)
+    if turn_timing == "vap":
+        if not turn_vap_json:
+            raise ValueError("--turn-timing vap requires --turn-vap-json")
+        onsets, boundaries = apply_turn_timing(
+            generated, lengths, SAMPLE_RATE, statistical_onsets,
+            load_turn_timing(turn_vap_json), timing,
+        )
+    elif turn_timing == "none":
+        onsets = []
+        cursor = 0
+        for length in lengths:
+            onsets.append(cursor)
+            cursor += length
+        boundaries = [{
+            "turn_index": index,
+            "offset_ms": 0.0,
+            "requested_offset_ms": 0.0,
+            "source": "sequential",
+        } for index in range(1, len(generated))]
+    else:
+        onsets = statistical_onsets
+        boundaries = []
+        for index in range(1, len(generated)):
+            previous_end = onsets[index - 1] + lengths[index - 1]
+            boundaries.append({
+                "turn_index": index,
+                "offset_ms": round((onsets[index] - previous_end) / SAMPLE_RATE * 1000.0, 1),
+                "requested_offset_ms": round(
+                    (onsets[index] - previous_end) / SAMPLE_RATE * 1000.0, 1
+                ),
+                "source": "zoom1-statistical",
+            })
 
     if backchannels == "vap":
         if not vap_json:
@@ -184,6 +223,7 @@ def synthesize(model_dir: Path, turns: list[Turn], output_path: Path,
             "wav": os.path.relpath(turn_path, output_path.parent),
         })
     manifest = {"sample_rate": SAMPLE_RATE, "layout": "stereo", "channel_map": {"[S1]": 0, "[S2]": 1},
+                "turn_timing_mode": turn_timing, "turn_boundaries": boundaries,
                 "backchannel_mode": backchannels, "backchannels": points, "turns": manifest_turns}
     output_path.with_suffix(".manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"

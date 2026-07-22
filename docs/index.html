@@ -128,7 +128,7 @@
       <div class="usage-grid">
         <div><span class="usage-number">01</span><h3>Script</h3><p>`[S1]`と`[S2]`で始まる日本語対話を用意します。JSON/JSONLにも対応します。</p></div>
         <div><span class="usage-number">02</span><h3>Voices</h3><p>参照音声を省略して生成音色を使うか、許諾済み音声を話者ごとに指定します。</p></div>
-        <div><span class="usage-number">03</span><h3>Timing</h3><p>既定はZoom1統計配置。VAPの時刻JSONを渡すと文脈依存相槌に切り替わります。</p></div>
+        <div><span class="usage-number">03</span><h3>Timing</h3><p>VAPの時刻JSONで相槌とターン交替を文脈依存化できます。未予測境界はZoom1統計へfallbackします。</p></div>
       </div>
     </section>
 
@@ -143,13 +143,13 @@
         <i aria-hidden="true">→</i>
         <div class="flow-step"><span>Synthesis</span><b>FireRedTTS-2</b><small>Zoom1 fine-tune</small></div>
         <i aria-hidden="true">→</i>
-        <div class="flow-step"><span>Timing</span><b>FTO + VAP</b><small>gap · overlap · BC</small></div>
+        <div class="flow-step"><span>Timing</span><b>VAP SHIFT + BC</b><small>gap · overlap · backchannel</small></div>
         <i aria-hidden="true">→</i>
         <div class="flow-step output-step"><span>Output</span><b>Stereo WAV</b><small>L=S1 · R=S2</small></div>
       </div>
       <div class="limitations">
         <h3>Current scope</h3>
-        <p>VAPが制御するのは短い相槌の時刻です。「失敗？」のようなおうむ返しや意味のある割り込みは台本に含め、通常ターンの食い込みはZoom1のFTO分布から決定します。</p>
+        <p>VAPは短い相槌に加え、通常ターンのSHIFT/HOLDから間・食い込みを制御できます。「失敗？」のようなおうむ返しや意味のある割り込み内容は台本に含めます。</p>
       </div>
     </section>
   </main>
