@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Zoom1 Dialogue TTS: FireRedTTS-2による日本語2話者ステレオ対話音声合成">
+  <title>Zoom1 Dialogue TTS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Noto+Sans+JP:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="#top" aria-label="Zoom1 Dialogue TTS ホーム">
+      <span class="signal-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      <span>Zoom1 Dialogue TTS</span>
+    </a>
+    <nav aria-label="ページ内ナビゲーション">
+      <a href="#samples">Samples</a>
+      <a href="#usage">Usage</a>
+      <a href="#pipeline">Pipeline</a>
+      <a class="repo-link" href="https://github.com/llm-jp/zoom1-dialogue-tts">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="kicker">LLM-jp Dialogue Working Group</p>
+        <h1 id="hero-title">Zoom1 Dialogue TTS</h1>
+        <p class="lead">FireRedTTS-2をZoom1の日本語対話でfine-tuneし、間・発話の重なり・聞き手の相槌を含む2話者ステレオ音声を生成します。</p>
+        <div class="channel-key" aria-label="チャンネル割り当て">
+          <span><i class="swatch swatch-s1"></i>Left · S1</span>
+          <span><i class="swatch swatch-s2"></i>Right · S2</span>
+          <span>24 kHz stereo</span>
+        </div>
+      </div>
+      <div class="hero-player" data-player="vap">
+        <div class="player-heading">
+          <div>
+            <span class="condition">VAP backchannels</span>
+            <h2>文脈に応じた聞き手反応</h2>
+          </div>
+          <span class="duration">00:23</span>
+        </div>
+        <div class="wave-stack" aria-label="左右チャンネルの音声波形">
+          <div class="wave-row"><span>S1</span><canvas data-wave-channel="0" width="960" height="88"></canvas></div>
+          <div class="wave-row"><span>S2</span><canvas data-wave-channel="1" width="960" height="88"></canvas></div>
+          <div class="playhead" aria-hidden="true"></div>
+        </div>
+        <div class="transport">
+          <button class="play-button" type="button" aria-label="VAP相槌版を再生">
+            <span class="play-icon" aria-hidden="true"></span>
+          </button>
+          <div class="time"><span class="elapsed">00:00</span><span aria-hidden="true">/</span><span>00:23</span></div>
+          <label class="scrubber-label"><span class="sr-only">再生位置</span><input class="scrubber" type="range" min="0" max="1000" value="0"></label>
+        </div>
+        <audio preload="metadata" src="assets/vap-backchannels.wav"></audio>
+      </div>
+      <a class="section-cue" href="#samples">Listen to the comparison <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <section class="samples section" id="samples" aria-labelledby="samples-title">
+      <div class="section-intro">
+        <p class="section-index">01 · Samples</p>
+        <h2 id="samples-title">同じ発話、異なる対話タイミング</h2>
+        <p>同一モデル・台本・seedの出力です。BではS1の長い発話中、2.2秒と5.0秒にS2の相槌を加えています。ヘッドフォンで左右の分離を確認できます。</p>
+      </div>
+
+      <div class="sample-list">
+        <article class="sample-row" data-player="timing">
+          <div class="sample-meta">
+            <span class="sample-letter">A</span>
+            <div><h3>Zoom1 timing</h3><p>FTO分布による間・重なり。追加相槌なし。</p></div>
+          </div>
+          <div class="compact-player">
+            <button class="play-button" type="button" aria-label="Zoom1タイミング版を再生"><span class="play-icon" aria-hidden="true"></span></button>
+            <div class="compact-wave"><canvas data-wave-mix width="900" height="72"></canvas><div class="playhead" aria-hidden="true"></div></div>
+            <span class="elapsed">00:00</span>
+          </div>
+          <audio preload="metadata" src="assets/zoom1-timing.wav"></audio>
+        </article>
+
+        <article class="sample-row" data-player="vap-compare">
+          <div class="sample-meta">
+            <span class="sample-letter accent">B</span>
+            <div><h3>VAP backchannels</h3><p>同じFTO配置 + S2の文脈依存相槌2点。</p></div>
+          </div>
+          <div class="compact-player">
+            <button class="play-button" type="button" aria-label="VAP相槌版を再生"><span class="play-icon" aria-hidden="true"></span></button>
+            <div class="compact-wave"><canvas data-wave-mix width="900" height="72"></canvas><div class="playhead" aria-hidden="true"></div></div>
+            <span class="elapsed">00:00</span>
+          </div>
+          <audio preload="metadata" src="assets/vap-backchannels.wav"></audio>
+        </article>
+      </div>
+
+      <details class="transcript">
+        <summary>デモ台本を見る</summary>
+        <ol>
+          <li><b>S1</b><span>お疲れさまです。この前の連休、家族で温泉に行ってきたんですよ。</span></li>
+          <li><b>S2</b><span>いいですね。どのあたりに行ったんですか。</span></li>
+          <li><b>S1</b><span>山の方まで車で行ったんですけど、渋滞がすごくて大変でした。</span></li>
+          <li><b>S2</b><span>連休はどこも混みますよね。</span></li>
+          <li><b>S1</b><span>でも露天風呂がすごく良くて、疲れが全部吹き飛びました。</span></li>
+          <li><b>S2</b><span>それは行ったかいがありましたね。</span></li>
+        </ol>
+      </details>
+    </section>
+
+    <section class="usage section" id="usage" aria-labelledby="usage-title">
+      <div class="section-intro">
+        <p class="section-index">02 · Usage</p>
+        <h2 id="usage-title">1行1ターンからステレオWAVへ</h2>
+        <p>CUDA GPU環境で`uv sync`を実行後、同梱CLIから推論できます。モデルがprivateの間はHugging Faceへのログインが必要です。</p>
+      </div>
+      <div class="terminal" role="region" aria-label="クイックスタートコマンド">
+        <div class="terminal-bar"><span></span><span></span><span></span><b>Quick start</b><button class="copy-button" type="button" data-copy-target="quick-command">Copy</button></div>
+        <pre id="quick-command"><code><span class="prompt">$</span> git clone https://github.com/llm-jp/zoom1-dialogue-tts.git
+<span class="prompt">$</span> cd zoom1-dialogue-tts
+<span class="prompt">$</span> uv sync
+<span class="prompt">$</span> uv run hf auth login
+<span class="prompt">$</span> uv run zoom1-dialogue-tts examples/dialogue.txt \
+    --variant drop \
+    -o out/dialogue.wav</code></pre>
+      </div>
+      <div class="usage-grid">
+        <div><span class="usage-number">01</span><h3>Script</h3><p>`[S1]`と`[S2]`で始まる日本語対話を用意します。JSON/JSONLにも対応します。</p></div>
+        <div><span class="usage-number">02</span><h3>Voices</h3><p>参照音声を省略して生成音色を使うか、許諾済み音声を話者ごとに指定します。</p></div>
+        <div><span class="usage-number">03</span><h3>Timing</h3><p>既定はZoom1統計配置。VAPの時刻JSONを渡すと文脈依存相槌に切り替わります。</p></div>
+      </div>
+    </section>
+
+    <section class="pipeline section" id="pipeline" aria-labelledby="pipeline-title">
+      <div class="section-intro">
+        <p class="section-index">03 · Pipeline</p>
+        <h2 id="pipeline-title">逐次生成と時間編集を分離</h2>
+        <p>FireRedTTS-2は各ターンを文脈付きで生成し、後段で話者別チャンネルへ配置します。重なりはfull-duplex生成ではなく、再現可能な時間編集です。</p>
+      </div>
+      <div class="flow" aria-label="音声生成処理の流れ">
+        <div class="flow-step"><span>Input</span><b>Dialogue script</b><small>[S1] / [S2]</small></div>
+        <i aria-hidden="true">→</i>
+        <div class="flow-step"><span>Synthesis</span><b>FireRedTTS-2</b><small>Zoom1 fine-tune</small></div>
+        <i aria-hidden="true">→</i>
+        <div class="flow-step"><span>Timing</span><b>FTO + VAP</b><small>gap · overlap · BC</small></div>
+        <i aria-hidden="true">→</i>
+        <div class="flow-step output-step"><span>Output</span><b>Stereo WAV</b><small>L=S1 · R=S2</small></div>
+      </div>
+      <div class="limitations">
+        <h3>Current scope</h3>
+        <p>VAPが制御するのは短い相槌の時刻です。「失敗？」のようなおうむ返しや意味のある割り込みは台本に含め、通常ターンの食い込みはZoom1のFTO分布から決定します。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Zoom1 Dialogue TTS</span>
+    <span>LLM-jp Dialogue Working Group · 2026</span>
+    <a href="https://github.com/llm-jp/zoom1-dialogue-tts">Source ↗</a>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>

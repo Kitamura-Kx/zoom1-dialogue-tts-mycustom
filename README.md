@@ -1,5 +1,7 @@
 # Zoom1 Dialogue TTS
 
+[Demo & audio samples](https://llm-jp.github.io/zoom1-dialogue-tts/) | [Hugging Face model](https://huggingface.co/llm-jp/zoom1-dialogue-tts)
+
 FireRedTTS-2をLLM-jp Zoom1の日本語対話でfine-tuneし、2話者の自然なステレオ対話音声を
 生成する推論ツールです。左チャンネルがS1、右チャンネルがS2です。話者交代時の間・発話の
 重なりと、聞き手の相槌をZoom1で観測した統計に基づいて付与します。
