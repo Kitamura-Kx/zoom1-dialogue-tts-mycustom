@@ -39,8 +39,8 @@
       <div class="hero-player" data-player="vap">
         <div class="player-heading">
           <div>
-            <span class="condition">VAP backchannels</span>
-            <h2>文脈に応じた聞き手反応</h2>
+            <span class="condition">VAP SHIFT + backchannels</span>
+            <h2>文脈に応じた対話タイミング</h2>
           </div>
           <span class="duration">00:23</span>
         </div>
@@ -50,7 +50,7 @@
           <div class="wave-playhead-track" aria-hidden="true"><div class="playhead"></div></div>
         </div>
         <div class="transport">
-          <button class="play-button" type="button" aria-label="VAP相槌版を再生">
+          <button class="play-button" type="button" aria-label="VAP統合版を再生">
             <span class="play-icon" aria-hidden="true"></span>
           </button>
           <div class="time"><span class="elapsed">00:00</span><span aria-hidden="true">/</span><span>00:23</span></div>
@@ -65,14 +65,14 @@
       <div class="section-intro">
         <p class="section-index">01 · Samples</p>
         <h2 id="samples-title">同じ発話、異なる対話タイミング</h2>
-        <p>同一モデル・台本・seedの出力です。BではS1の長い発話中、2.2秒と5.0秒にS2の相槌を加えています。ヘッドフォンで左右の分離を確認できます。</p>
+        <p>同一モデル・台本・seedの出力です。統計FTO、VAPによるターン交替、さらにVAP相槌を加えた統合版を比較できます。ヘッドフォンで左右の分離を確認できます。</p>
       </div>
 
       <div class="sample-list">
         <article class="sample-row" data-player="timing">
           <div class="sample-meta">
             <span class="sample-letter">A</span>
-            <div><h3>Zoom1 timing</h3><p>FTO分布による間・重なり。追加相槌なし。</p></div>
+            <div><h3>Zoom1 statistical FTO</h3><p>統計分布による間・重なり。追加相槌なし。</p></div>
           </div>
           <div class="compact-player">
             <button class="play-button" type="button" aria-label="Zoom1タイミング版を再生"><span class="play-icon" aria-hidden="true"></span></button>
@@ -82,13 +82,26 @@
           <audio preload="metadata" src="assets/zoom1-timing.wav"></audio>
         </article>
 
-        <article class="sample-row" data-player="vap-compare">
+        <article class="sample-row" data-player="vap-turns">
           <div class="sample-meta">
             <span class="sample-letter accent">B</span>
-            <div><h3>VAP backchannels</h3><p>同じFTO配置 + S2の文脈依存相槌2点。</p></div>
+            <div><h3>VAP turn timing</h3><p>SHIFT/HOLD予測による間・重なり。追加相槌なし。</p></div>
           </div>
           <div class="compact-player">
-            <button class="play-button" type="button" aria-label="VAP相槌版を再生"><span class="play-icon" aria-hidden="true"></span></button>
+            <button class="play-button" type="button" aria-label="VAPターン交替版を再生"><span class="play-icon" aria-hidden="true"></span></button>
+            <div class="compact-wave"><canvas data-wave-mix width="900" height="72"></canvas><div class="playhead" aria-hidden="true"></div></div>
+            <span class="elapsed">00:00</span>
+          </div>
+          <audio preload="metadata" src="assets/vap-turns.wav"></audio>
+        </article>
+
+        <article class="sample-row" data-player="vap-complete">
+          <div class="sample-meta">
+            <span class="sample-letter complete">C</span>
+            <div><h3>VAP turn timing + backchannels</h3><p>VAPターン交替 + S2の文脈依存相槌2点。</p></div>
+          </div>
+          <div class="compact-player">
+            <button class="play-button" type="button" aria-label="VAP統合版を再生"><span class="play-icon" aria-hidden="true"></span></button>
             <div class="compact-wave"><canvas data-wave-mix width="900" height="72"></canvas><div class="playhead" aria-hidden="true"></div></div>
             <span class="elapsed">00:00</span>
           </div>
@@ -121,8 +134,15 @@
 <span class="prompt">$</span> cd zoom1-dialogue-tts
 <span class="prompt">$</span> uv sync
 <span class="prompt">$</span> uv run hf auth login
+<span class="prompt">$</span> uv venv --python 3.12 .venv-vap
+<span class="prompt">$</span> uv pip install --python .venv-vap/bin/python --no-deps maai
+<span class="prompt">$</span> uv pip install --python .venv-vap/bin/python torch torchaudio \
+    numpy soundfile librosa einops rich matplotlib scipy \
+    transformers==5.5.3 huggingface-hub pygame
 <span class="prompt">$</span> uv run zoom1-dialogue-tts examples/dialogue.txt \
     --variant drop \
+    --turn-timing vap-auto \
+    --vap-python .venv-vap/bin/python \
     -o out/dialogue.wav</code></pre>
       </div>
       <div class="usage-grid">

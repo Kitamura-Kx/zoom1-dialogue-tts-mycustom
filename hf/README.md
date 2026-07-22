@@ -60,13 +60,47 @@ codecとQwen tokenizerは公式baseと同一なので収録していません。
 
 ## Usage
 
+CUDA GPUを搭載したLinux環境を想定しています。モデルリポジトリがprivateの間は、アクセス権の
+あるHugging Faceアカウントでログインしてください。
+
 ```bash
 git clone https://github.com/llm-jp/zoom1-dialogue-tts.git
 cd zoom1-dialogue-tts
 uv sync
 uv run hf auth login
+
+# 基本推論: Zoom1統計による間・重なり
 uv run zoom1-dialogue-tts examples/dialogue.txt -o out/dialogue.wav
 ```
+
+### 推奨: VAPによる文脈依存のターン交替
+
+MaAI/VAPの`p_now`・`p_future`から通常ターンのSHIFT/HOLDを予測し、内容と韻律に応じて
+間・食い込みを変えられます。FireRedTTS-2によるターン生成、VAP解析、FTO適用は1コマンドで
+実行され、FireRedTTS-2の生成は1回だけです。
+
+MaAIは依存関係が異なるため、初回だけ別環境を作成します。オフラインWAV解析ではマイク用の
+PyAudioは不要です。
+
+```bash
+uv venv --python 3.12 .venv-vap
+uv pip install --python .venv-vap/bin/python --no-deps maai
+uv pip install --python .venv-vap/bin/python \
+  torch torchaudio numpy soundfile librosa einops rich matplotlib scipy \
+  transformers==5.5.3 huggingface-hub pygame
+
+uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_dialogue.wav \
+  --turn-timing vap-auto \
+  --vap-python .venv-vap/bin/python
+```
+
+出力は24 kHzステレオWAV（左=S1、右=S2）です。最終manifestに各境界のSHIFT/HOLD、要求FTO、
+安全制約適用後のFTOを記録します。VAP解析用WAV、確率trace、境界JSONも同じ出力ディレクトリへ
+保存されます。
+
+聞き手の短い相槌には別のVAP backchannel予測JSONを指定できます。詳細なJSON形式、参照声の
+指定、統計配置との比較手順は
+[GitHub README](https://github.com/llm-jp/zoom1-dialogue-tts#readme)を参照してください。
 
 ## Training
 
@@ -82,4 +116,3 @@ uv run zoom1-dialogue-tts examples/dialogue.txt -o out/dialogue.wav
 - Model weights: `other`、再配布不可、プロジェクト内研究用途限定
 
 このモデルをpublic化する前に、Zoom1参加者の同意範囲と派生モデル公開条件を確認してください。
-

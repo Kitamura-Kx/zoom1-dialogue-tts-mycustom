@@ -108,6 +108,7 @@ canvas { display: block; width: 100%; height: 100%; }
 .sample-meta p { margin: 0; color: var(--muted); font-size: 13px; }
 .sample-letter { flex: 0 0 auto; width: 38px; height: 38px; display: grid; place-items: center; background: var(--s1); color: var(--white); font: 500 14px "IBM Plex Mono", monospace; }
 .sample-letter.accent { background: var(--s2); }
+.sample-letter.complete { background: var(--ink); }
 .compact-player { display: grid; grid-template-columns: 42px 1fr 46px; gap: 16px; align-items: center; }
 .compact-wave { position: relative; height: 54px; overflow: hidden; }
 .compact-player .elapsed { color: var(--muted); font: 11px "IBM Plex Mono", monospace; }
