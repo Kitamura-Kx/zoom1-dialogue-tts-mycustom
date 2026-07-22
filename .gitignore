@@ -7,6 +7,6 @@ dist/
 build/
 out/
 *.wav
+!docs/assets/*.wav
 *.pt
 *.safetensors
-
