@@ -8,5 +8,6 @@ build/
 out/
 *.wav
 !docs/assets/*.wav
+!private_samples/*.wav
 *.pt
 *.safetensors

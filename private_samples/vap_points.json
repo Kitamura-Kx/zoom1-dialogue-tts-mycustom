@@ -1,0 +1,14 @@
+[
+  {"time": 2.2, "listener_channel": 1, "score": 0.653},
+  {"time": 4.8, "listener_channel": 1, "score": 0.752},
+  {"time": 7.6, "listener_channel": 1, "score": 0.709},
+  {"time": 14.1, "listener_channel": 1, "score": 0.896},
+  {"time": 16.4, "listener_channel": 1, "score": 0.875},
+  {"time": 27.2, "listener_channel": 1, "score": 0.940},
+  {"time": 28.9, "listener_channel": 1, "score": 0.941},
+  {"time": 33.4, "listener_channel": 1, "score": 0.771},
+  {"time": 36.3, "listener_channel": 1, "score": 0.901},
+  {"time": 43.4, "listener_channel": 1, "score": 0.913},
+  {"time": 61.2, "listener_channel": 1, "score": 0.802},
+  {"time": 62.8, "listener_channel": 1, "score": 0.866}
+]

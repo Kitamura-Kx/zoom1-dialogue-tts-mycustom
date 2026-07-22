@@ -14,6 +14,10 @@ FireRedTTS-2をLLM-jp Zoom1の日本語対話でfine-tuneし、2話者の自然�
 > 現在、モデルリポジトリはprivateです。初回実行前にアクセス権のあるHugging Face
 > アカウントで `hf auth login` を実行してください。公開時にはこの注意を更新します。
 
+アクセス権のある共同研究者向けに、Zoom1収録話者の許諾範囲内で実音声をvoice-clone
+プロンプトとして用いた比較サンプルを`private_samples/`へ収録しています。このサンプルは
+公開GitHub Pagesには含まれません。利用条件は同ディレクトリのREADMEを確認してください。
+
 ## セットアップ
 
 CUDA GPUを搭載したLinux環境を想定しています。`uv`を使うとPythonとCUDA版PyTorchを
