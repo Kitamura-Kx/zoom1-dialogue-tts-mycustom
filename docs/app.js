@@ -63,6 +63,23 @@ players.forEach((root) => {
   const audio = root.querySelector("audio");
   const button = root.querySelector(".play-button");
   const scrubber = root.querySelector(".scrubber");
+  let animationFrame = null;
+
+  const stopProgressAnimation = () => {
+    if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+    animationFrame = null;
+    updatePlayer(root, audio);
+  };
+
+  const animateProgress = () => {
+    updatePlayer(root, audio);
+    if (!audio.paused && !audio.ended) {
+      animationFrame = requestAnimationFrame(animateProgress);
+    } else {
+      animationFrame = null;
+    }
+  };
+
   loadWaveforms(root, audio);
 
   button.addEventListener("click", async () => {
@@ -74,9 +91,18 @@ players.forEach((root) => {
       audio.pause();
     }
   });
-  audio.addEventListener("play", () => root.classList.add("is-playing"));
-  audio.addEventListener("pause", () => root.classList.remove("is-playing"));
-  audio.addEventListener("ended", () => root.classList.remove("is-playing"));
+  audio.addEventListener("play", () => {
+    root.classList.add("is-playing");
+    if (animationFrame === null) animationFrame = requestAnimationFrame(animateProgress);
+  });
+  audio.addEventListener("pause", () => {
+    root.classList.remove("is-playing");
+    stopProgressAnimation();
+  });
+  audio.addEventListener("ended", () => {
+    root.classList.remove("is-playing");
+    stopProgressAnimation();
+  });
   audio.addEventListener("timeupdate", () => updatePlayer(root, audio));
   if (scrubber) {
     scrubber.addEventListener("input", () => {
