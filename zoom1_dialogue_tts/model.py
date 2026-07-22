@@ -5,9 +5,9 @@ from pathlib import Path
 
 BASE_MODEL_ID = "FireRedTeam/FireRedTTS2"
 BASE_MODEL_REVISION = "4af3f5cc4963373b86b52d750220d4de85261f05"
-DEFAULT_MODEL_REVISION = "d68cff5b83f21da8bd4bf2ba468f26d51e1303dd"
+DEFAULT_MODEL_REVISION = "6db72884d658e1fa8872adb79de6216100da77d0"
 DEFAULT_MODEL_ID = os.environ.get(
-    "ZOOM1_TTS_MODEL_ID", "kobas-lab/fireredtts2-zoom1-dialogue-ja"
+    "ZOOM1_TTS_MODEL_ID", "llm-jp/zoom1-dialogue-tts"
 )
 REQUIRED_BASE = ("config_llm.json", "config_codec.json", "codec.pt", "Qwen2.5-1.5B")
 

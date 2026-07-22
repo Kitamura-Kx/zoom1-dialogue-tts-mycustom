@@ -9,6 +9,6 @@ unmodified except for adding fireredtts2/utils/__init__.py so standard Python
 packaging includes that module.
 
 The default model checkpoint is hosted separately at:
-https://huggingface.co/kobas-lab/fireredtts2-zoom1-dialogue-ja
+https://huggingface.co/llm-jp/zoom1-dialogue-tts
 
 No Zoom1 source audio or speaker prompt audio is distributed in this repository.

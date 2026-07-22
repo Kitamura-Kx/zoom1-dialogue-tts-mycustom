@@ -4,7 +4,7 @@ FireRedTTS-2をLLM-jp Zoom1の日本語対話でfine-tuneし、2話者の自然�
 生成する推論ツールです。左チャンネルがS1、右チャンネルがS2です。話者交代時の間・発話の
 重なりと、聞き手の相槌をZoom1で観測した統計に基づいて付与します。
 
-- Model: [kobas-lab/fireredtts2-zoom1-dialogue-ja](https://huggingface.co/kobas-lab/fireredtts2-zoom1-dialogue-ja)
+- Model: [llm-jp/zoom1-dialogue-tts](https://huggingface.co/llm-jp/zoom1-dialogue-tts)
 - Base implementation: [FireRedTeam/FireRedTTS2](https://github.com/FireRedTeam/FireRedTTS2)
 - Output: 24 kHz, 2-channel WAV (left=S1, right=S2)
 
