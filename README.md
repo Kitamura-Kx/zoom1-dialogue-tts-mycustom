@@ -98,19 +98,14 @@ SHIFTをターン末尾より前に予測した境界は重ね、現在話者の
 予測がない境界だけZoom1統計へfallbackし、短いターンへの過剰な食い込みは自動で制限します。
 
 ```bash
-# 1. 同じseedでVAP解析用のターン分離音声を作る
-uv run zoom1-dialogue-tts examples/dialogue.txt -o out/base.wav \
-  --turn-timing none --backchannels none --seed 0
-
-# 2. MaAIを導入したVAP環境で境界ごとのFTOを予測する
-python tools/vap_turn_timing.py \
-  out/base.wav out/base.manifest.json out/vap_turns.json \
-  --save-trace out/vap_trace.json
-
-# 3. 同じモデル・台本・声・seedで文脈依存FTOを適用する
+# 推奨: FireRed生成、VAP解析、FTO適用を1コマンドで実行
 uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_dialogue.wav \
-  --turn-timing vap --turn-vap-json out/vap_turns.json --seed 0
+  --turn-timing vap-auto --vap-python .venv-vap/bin/python --seed 0
 ```
+
+FireRedTTS-2による各ターンの生成は1回だけです。生成後にターン分離音声をMaAIへ渡し、
+予測FTOを同じ音声へ適用します。`out/vap_dialogue.vap_input.wav`、VAP trace、境界JSONも
+診断用に保存され、最終manifestの`vap_artifacts`から参照できます。
 
 `vap_turns.json`は次の形式です。負値が重なり、正値が間です。
 
@@ -124,6 +119,17 @@ uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_dialogue.wav \
 MaAIはPyAudioなどの環境制約があるため標準依存には含めていません。保存したVAP traceを
 `--trace-json`で再利用すれば、モデルを再実行せず閾値を比較できます。従来の統計FTOは
 `--turn-timing stat`、重なりなしは`--turn-timing none`です。
+
+閾値を比較するときは、従来の手動経路も利用できます。
+
+```bash
+uv run zoom1-dialogue-tts examples/dialogue.txt -o out/base.wav \
+  --turn-timing none --backchannels none --seed 0
+.venv-vap/bin/python tools/vap_turn_timing.py \
+  out/base.wav out/base.manifest.json out/vap_turns.json --save-trace out/vap_trace.json
+uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_manual.wav \
+  --turn-timing vap --turn-vap-json out/vap_turns.json --seed 0
+```
 
 PortAudioを導入できない計算ノードでは、MaAIを別環境へ依存解決なしで入れてください。
 本ツールはWAV解析時にPyAudioを自動スタブ化するため、マイク関連パッケージは不要です。

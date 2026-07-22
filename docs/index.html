@@ -128,7 +128,7 @@
       <div class="usage-grid">
         <div><span class="usage-number">01</span><h3>Script</h3><p>`[S1]`と`[S2]`で始まる日本語対話を用意します。JSON/JSONLにも対応します。</p></div>
         <div><span class="usage-number">02</span><h3>Voices</h3><p>参照音声を省略して生成音色を使うか、許諾済み音声を話者ごとに指定します。</p></div>
-        <div><span class="usage-number">03</span><h3>Timing</h3><p>VAPの時刻JSONで相槌とターン交替を文脈依存化できます。未予測境界はZoom1統計へfallbackします。</p></div>
+        <div><span class="usage-number">03</span><h3>Timing</h3><p>`--turn-timing vap-auto`で生成からVAP SHIFT適用まで1コマンドです。未予測境界はZoom1統計へfallbackします。</p></div>
       </div>
     </section>
 
@@ -149,7 +149,7 @@
       </div>
       <div class="limitations">
         <h3>Current scope</h3>
-        <p>VAPは短い相槌に加え、通常ターンのSHIFT/HOLDから間・食い込みを制御できます。「失敗？」のようなおうむ返しや意味のある割り込み内容は台本に含めます。</p>
+        <p>VAPは短い相槌に加え、通常ターンのSHIFT/HOLDから間・食い込みを制御できます。FireRed生成、VAP解析、FTO適用は1コマンドで実行できます。</p>
       </div>
     </section>
   </main>

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import subprocess
 from pathlib import Path
 
 from .script import Turn
@@ -137,9 +138,62 @@ def _assemble(generated, onsets, banks, vap_points, seed):
     return output
 
 
+def _auto_vap_turn_timing(generated: list[dict], output_path: Path,
+                          vap_python: str, vap_device: str) -> tuple[list[dict], dict]:
+    """Run MaAI once on sequential turns and preserve its diagnostic artifacts."""
+    import torchaudio
+
+    onsets = []
+    cursor = 0
+    for turn in generated:
+        onsets.append(cursor)
+        cursor += turn["audio"].numel()
+    base_audio = _assemble(generated, onsets, {}, [], seed=0)
+    prefix = output_path.parent / f"{output_path.stem}.vap"
+    input_wav = prefix.with_suffix(".vap_input.wav")
+    input_manifest = prefix.with_suffix(".vap_input.manifest.json")
+    timing_json = prefix.with_suffix(".vap_turns.json")
+    trace_json = prefix.with_suffix(".vap_trace.json")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    torchaudio.save(str(input_wav), base_audio, SAMPLE_RATE)
+
+    analysis_turns = []
+    for turn, onset in zip(generated, onsets):
+        analysis_turns.append({
+            **{key: turn[key] for key in ("index", "speaker", "channel", "text")},
+            "onset": round(onset / SAMPLE_RATE, 4),
+            "duration": round(turn["audio"].numel() / SAMPLE_RATE, 4),
+        })
+    input_manifest.write_text(json.dumps({
+        "sample_rate": SAMPLE_RATE,
+        "layout": "stereo",
+        "turn_timing_mode": "none",
+        "turns": analysis_turns,
+    }, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    env = os.environ.copy()
+    source_root = str(Path(__file__).resolve().parents[1])
+    env["PYTHONPATH"] = source_root + os.pathsep + env.get("PYTHONPATH", "")
+    command = [
+        vap_python, "-m", "zoom1_dialogue_tts.vap_cli",
+        str(input_wav), str(input_manifest), str(timing_json),
+        "--save-trace", str(trace_json), "--device", vap_device,
+    ]
+    print(f"[vap-auto] {' '.join(command[:3])} ...", flush=True)
+    subprocess.run(command, check=True, env=env)
+    artifacts = {
+        "analysis_wav": os.path.relpath(input_wav, output_path.parent),
+        "analysis_manifest": os.path.relpath(input_manifest, output_path.parent),
+        "turn_timing_json": os.path.relpath(timing_json, output_path.parent),
+        "trace_json": os.path.relpath(trace_json, output_path.parent),
+    }
+    return load_turn_timing(timing_json), artifacts
+
+
 def synthesize(model_dir: Path, turns: list[Turn], output_path: Path,
                prompts: list[tuple[str, str, str]], timing: TimingConfig,
                turn_timing: str, turn_vap_json: str | None,
+               vap_python: str, vap_device: str,
                backchannels: str, vap_json: str | None, bc_per_minute: float,
                temperature: float, topk: int,
                max_turn_ms: float) -> Path:
@@ -158,7 +212,15 @@ def synthesize(model_dir: Path, turns: list[Turn], output_path: Path,
         turn["base_onset"] = base / SAMPLE_RATE
         base += length
     statistical_onsets = sample_onsets(generated, lengths, SAMPLE_RATE, timing)
-    if turn_timing == "vap":
+    vap_artifacts = None
+    if turn_timing == "vap-auto":
+        predicted, vap_artifacts = _auto_vap_turn_timing(
+            generated, output_path, vap_python, vap_device
+        )
+        onsets, boundaries = apply_turn_timing(
+            generated, lengths, SAMPLE_RATE, statistical_onsets, predicted, timing,
+        )
+    elif turn_timing == "vap":
         if not turn_vap_json:
             raise ValueError("--turn-timing vap requires --turn-vap-json")
         onsets, boundaries = apply_turn_timing(
@@ -225,6 +287,8 @@ def synthesize(model_dir: Path, turns: list[Turn], output_path: Path,
     manifest = {"sample_rate": SAMPLE_RATE, "layout": "stereo", "channel_map": {"[S1]": 0, "[S2]": 1},
                 "turn_timing_mode": turn_timing, "turn_boundaries": boundaries,
                 "backchannel_mode": backchannels, "backchannels": points, "turns": manifest_turns}
+    if vap_artifacts:
+        manifest["vap_artifacts"] = vap_artifacts
     output_path.with_suffix(".manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )

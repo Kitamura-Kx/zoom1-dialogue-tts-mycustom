@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 from pathlib import Path
 
 from .model import DEFAULT_MODEL_ID, DEFAULT_MODEL_REVISION, resolve_model
@@ -25,10 +26,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--cache-dir", default=None)
     parser.add_argument("--prompt-s1", nargs=2, metavar=("WAV", "TRANSCRIPT"))
     parser.add_argument("--prompt-s2", nargs=2, metavar=("WAV", "TRANSCRIPT"))
-    parser.add_argument("--turn-timing", choices=["stat", "vap", "none"], default="stat",
-                        help="turn gaps/overlaps: Zoom1 statistics, VAP SHIFT JSON, or sequential")
+    parser.add_argument("--turn-timing", choices=["stat", "vap-auto", "vap", "none"], default="stat",
+                        help="turn gaps/overlaps: statistics, automatic VAP, VAP JSON, or sequential")
     parser.add_argument("--turn-vap-json",
                         help="VAP turn timing [{turn_index, offset_ms, score}, ...]")
+    parser.add_argument("--vap-python", default=".venv-vap/bin/python",
+                        help="Python executable containing MaAI for vap-auto")
+    parser.add_argument("--vap-device", default="cpu", help="MaAI device for vap-auto")
     parser.add_argument("--backchannels", choices=["stat", "vap", "none"], default="stat",
                         help="backchannel timing: Zoom1 statistics, VAP JSON, or disabled")
     parser.add_argument("--vap-json", help="VAP points [{time, listener_channel, score}, ...]")
@@ -43,6 +47,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
+    if args.turn_timing == "vap-auto" and not (
+        Path(args.vap_python).is_file() or shutil.which(args.vap_python)
+    ):
+        raise SystemExit(
+            f"--vap-python not found: {args.vap_python} (create .venv-vap as documented)"
+        )
     prompts = []
     if args.prompt_s1:
         prompts.append(("[S1]", args.prompt_s1[0], args.prompt_s1[1]))
@@ -57,6 +67,8 @@ def main(argv: list[str] | None = None) -> None:
         timing=TimingConfig(seed=args.seed),
         turn_timing=args.turn_timing,
         turn_vap_json=args.turn_vap_json,
+        vap_python=args.vap_python,
+        vap_device=args.vap_device,
         backchannels=args.backchannels,
         vap_json=args.vap_json,
         bc_per_minute=args.bc_per_minute,
