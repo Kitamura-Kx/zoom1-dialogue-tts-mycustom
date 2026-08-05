@@ -1,0 +1,447 @@
+{
+  "sample_rate": 24000,
+  "layout": "stereo",
+  "turn_timing_mode": "none",
+  "turns": [
+    {
+      "index": 0,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "こんにちは、",
+      "onset": 0.0,
+      "duration": 1.04
+    },
+    {
+      "index": 1,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "こんにちは、いいお天気ですね。",
+      "onset": 1.04,
+      "duration": 3.04
+    },
+    {
+      "index": 2,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "週末は何をしていましたか？",
+      "onset": 4.08,
+      "duration": 2.32
+    },
+    {
+      "index": 3,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "えーと、子どもと一緒に公園に行ってきました。",
+      "onset": 6.4,
+      "duration": 3.36
+    },
+    {
+      "index": 4,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "公園いいですね。",
+      "onset": 9.76,
+      "duration": 1.68
+    },
+    {
+      "index": 5,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "そうなんです。でも、",
+      "onset": 11.44,
+      "duration": 1.36
+    },
+    {
+      "index": 6,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "うん",
+      "onset": 12.8,
+      "duration": 0.4
+    },
+    {
+      "index": 7,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "走り回るのがすごくて、かなり疲れました。",
+      "onset": 13.2,
+      "duration": 3.28
+    },
+    {
+      "index": 8,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "アハハ、想像がつきます。",
+      "onset": 16.48,
+      "duration": 2.56
+    },
+    {
+      "index": 9,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "親はただついていくのみですもんね。",
+      "onset": 19.04,
+      "duration": 2.4
+    },
+    {
+      "index": 10,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "本当にそうだと思います。",
+      "onset": 21.44,
+      "duration": 2.0
+    },
+    {
+      "index": 11,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "その後は、家でゆっくり本を読んでいました。",
+      "onset": 23.44,
+      "duration": 4.0
+    },
+    {
+      "index": 12,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "おお、読書ですか。",
+      "onset": 27.44,
+      "duration": 2.24
+    },
+    {
+      "index": 13,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "はい。最近は専門書を読み直していて。",
+      "onset": 29.68,
+      "duration": 3.44
+    },
+    {
+      "index": 14,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "勉強熱心ですね。",
+      "onset": 33.12,
+      "duration": 1.6
+    },
+    {
+      "index": 15,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "うーん、今の仕事で必要なので。",
+      "onset": 34.72,
+      "duration": 2.72
+    },
+    {
+      "index": 16,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "なるほど。お仕事に直結することなんですね。",
+      "onset": 37.44,
+      "duration": 4.48
+    },
+    {
+      "index": 17,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "ええ。製造業の方にいるので、",
+      "onset": 41.92,
+      "duration": 2.88
+    },
+    {
+      "index": 18,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "うん",
+      "onset": 44.8,
+      "duration": 0.4
+    },
+    {
+      "index": 19,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "技術的な更新が激しくて。",
+      "onset": 45.2,
+      "duration": 2.4
+    },
+    {
+      "index": 20,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "技術職なんですね。",
+      "onset": 47.6,
+      "duration": 1.6
+    },
+    {
+      "index": 21,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "はい。日々勉強しないと置いていかれる気がして。",
+      "onset": 49.2,
+      "duration": 3.6
+    },
+    {
+      "index": 22,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "その向上心、本当に尊敬します。",
+      "onset": 52.8,
+      "duration": 2.96
+    },
+    {
+      "index": 23,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "ありがとうございます。ただ、",
+      "onset": 55.76,
+      "duration": 1.92
+    },
+    {
+      "index": 24,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "うん",
+      "onset": 57.68,
+      "duration": 0.32
+    },
+    {
+      "index": 25,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "自分の時間が全然足りないのが悩みで。",
+      "onset": 58.0,
+      "duration": 3.12
+    },
+    {
+      "index": 26,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "ああ、分かります。",
+      "onset": 61.12,
+      "duration": 1.84
+    },
+    {
+      "index": 27,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "仕事と家庭の両立って大変ですよね。",
+      "onset": 62.96,
+      "duration": 3.44
+    },
+    {
+      "index": 28,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "本当に。私もつい欲張って予定を詰め込みがちです。",
+      "onset": 66.4,
+      "duration": 4.64
+    },
+    {
+      "index": 29,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "そうですよね。あ、今の話、",
+      "onset": 71.04,
+      "duration": 2.56
+    },
+    {
+      "index": 30,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "はい",
+      "onset": 73.6,
+      "duration": 0.4
+    },
+    {
+      "index": 31,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "どういう意味でしたか？",
+      "onset": 74.0,
+      "duration": 1.28
+    },
+    {
+      "index": 32,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "あ、すみません。私もやりたいことがたくさんあって、",
+      "onset": 75.28,
+      "duration": 3.92
+    },
+    {
+      "index": 33,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "うん",
+      "onset": 79.2,
+      "duration": 0.4
+    },
+    {
+      "index": 34,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "つい無理にスケジュールを組んでしまうという意味です。",
+      "onset": 79.6,
+      "duration": 3.12
+    },
+    {
+      "index": 35,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "あ、なるほど。そういうことですね。",
+      "onset": 82.72,
+      "duration": 2.72
+    },
+    {
+      "index": 36,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "さっき、専門書を読み直していたって言ってましたよね。",
+      "onset": 85.44,
+      "duration": 4.24
+    },
+    {
+      "index": 37,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "はい、そうでした。",
+      "onset": 89.68,
+      "duration": 1.04
+    },
+    {
+      "index": 38,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "集中して読む時間を作るの、",
+      "onset": 90.72,
+      "duration": 2.48
+    },
+    {
+      "index": 39,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "うん",
+      "onset": 93.2,
+      "duration": 0.48
+    },
+    {
+      "index": 40,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "結構難しいんじゃないですか？",
+      "onset": 93.68,
+      "duration": 2.08
+    },
+    {
+      "index": 41,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "本当にそうなんです。子どもが寝た後に、",
+      "onset": 95.76,
+      "duration": 3.6
+    },
+    {
+      "index": 42,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "うん",
+      "onset": 99.36,
+      "duration": 0.48
+    },
+    {
+      "index": 43,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "隙間時間でなんとか読んでいます。",
+      "onset": 99.84,
+      "duration": 2.48
+    },
+    {
+      "index": 44,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "それは大変ですね。",
+      "onset": 102.32,
+      "duration": 1.6
+    },
+    {
+      "index": 45,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "でも、理解できた時の達成感があるので。",
+      "onset": 103.92,
+      "duration": 4.4
+    },
+    {
+      "index": 46,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "その感覚、いいですよね。",
+      "onset": 108.32,
+      "duration": 2.56
+    },
+    {
+      "index": 47,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "はい。成長を感じられるのが一番の喜びです。",
+      "onset": 110.88,
+      "duration": 4.0
+    },
+    {
+      "index": 48,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "前向きで素敵です。",
+      "onset": 114.88,
+      "duration": 1.36
+    },
+    {
+      "index": 49,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "まあ、たまには全部忘れて寝たいですけどね。",
+      "onset": 116.24,
+      "duration": 2.96
+    },
+    {
+      "index": 50,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "アハハ、それは正解だと思います。",
+      "onset": 119.2,
+      "duration": 3.04
+    },
+    {
+      "index": 51,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "あ、もうこんな時間。",
+      "onset": 122.24,
+      "duration": 1.44
+    },
+    {
+      "index": 52,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "おっと。",
+      "onset": 123.68,
+      "duration": 1.52
+    },
+    {
+      "index": 53,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "すみません、そろそろ次があるので失礼しますね。",
+      "onset": 125.2,
+      "duration": 3.84
+    },
+    {
+      "index": 54,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "はい、お疲れ様でした。",
+      "onset": 129.04,
+      "duration": 2.0
+    }
+  ]
+}

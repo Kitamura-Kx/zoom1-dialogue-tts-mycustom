@@ -1,0 +1,952 @@
+{
+  "sample_rate": 24000,
+  "layout": "stereo",
+  "channel_map": {
+    "[S1]": 0,
+    "[S2]": 1
+  },
+  "turn_timing_mode": "vap-auto",
+  "turn_boundaries": [
+    {
+      "turn_index": 1,
+      "offset_ms": 702.4,
+      "requested_offset_ms": 702.4,
+      "source": "vap-shift",
+      "score": -0.3335,
+      "event": "hold"
+    },
+    {
+      "turn_index": 2,
+      "offset_ms": -180.0,
+      "requested_offset_ms": -180.0,
+      "source": "vap-shift",
+      "score": 0.5978,
+      "event": "shift"
+    },
+    {
+      "turn_index": 3,
+      "offset_ms": -100.0,
+      "requested_offset_ms": -100.0,
+      "source": "vap-shift",
+      "score": 0.6052,
+      "event": "shift"
+    },
+    {
+      "turn_index": 4,
+      "offset_ms": -160.0,
+      "requested_offset_ms": -160.0,
+      "source": "vap-shift",
+      "score": 0.3968,
+      "event": "shift"
+    },
+    {
+      "turn_index": 5,
+      "offset_ms": -140.0,
+      "requested_offset_ms": -140.0,
+      "source": "vap-shift",
+      "score": 0.2391,
+      "event": "shift"
+    },
+    {
+      "turn_index": 6,
+      "offset_ms": -200.0,
+      "requested_offset_ms": -200.0,
+      "source": "backchannel-fixed",
+      "score": 1.0,
+      "event": "backchannel"
+    },
+    {
+      "turn_index": 7,
+      "offset_ms": -100.0,
+      "requested_offset_ms": -100.0,
+      "source": "vap-shift",
+      "score": 0.9501,
+      "event": "shift"
+    },
+    {
+      "turn_index": 8,
+      "offset_ms": 124.9,
+      "requested_offset_ms": 124.9,
+      "source": "vap-shift",
+      "score": 0.4398,
+      "event": "hold"
+    },
+    {
+      "turn_index": 9,
+      "offset_ms": 102.2,
+      "requested_offset_ms": 102.2,
+      "source": "vap-shift",
+      "score": 0.4702,
+      "event": "hold"
+    },
+    {
+      "turn_index": 10,
+      "offset_ms": -140.0,
+      "requested_offset_ms": -140.0,
+      "source": "vap-shift",
+      "score": 0.5988,
+      "event": "shift"
+    },
+    {
+      "turn_index": 11,
+      "offset_ms": 337.8,
+      "requested_offset_ms": 337.8,
+      "source": "vap-shift",
+      "score": 0.1547,
+      "event": "hold"
+    },
+    {
+      "turn_index": 12,
+      "offset_ms": 80.0,
+      "requested_offset_ms": 80.0,
+      "source": "vap-shift",
+      "score": 0.5291,
+      "event": "hold"
+    },
+    {
+      "turn_index": 13,
+      "offset_ms": -180.0,
+      "requested_offset_ms": -180.0,
+      "source": "vap-shift",
+      "score": 0.3871,
+      "event": "shift"
+    },
+    {
+      "turn_index": 14,
+      "offset_ms": 474.8,
+      "requested_offset_ms": 474.8,
+      "source": "vap-shift",
+      "score": -0.0287,
+      "event": "hold"
+    },
+    {
+      "turn_index": 15,
+      "offset_ms": -120.0,
+      "requested_offset_ms": -120.0,
+      "source": "vap-shift",
+      "score": 0.382,
+      "event": "shift"
+    },
+    {
+      "turn_index": 16,
+      "offset_ms": 80.0,
+      "requested_offset_ms": 80.0,
+      "source": "vap-shift",
+      "score": 0.546,
+      "event": "hold"
+    },
+    {
+      "turn_index": 17,
+      "offset_ms": -120.0,
+      "requested_offset_ms": -120.0,
+      "source": "vap-shift",
+      "score": 0.3471,
+      "event": "shift"
+    },
+    {
+      "turn_index": 18,
+      "offset_ms": -200.0,
+      "requested_offset_ms": -200.0,
+      "source": "backchannel-fixed",
+      "score": 1.0,
+      "event": "backchannel"
+    },
+    {
+      "turn_index": 19,
+      "offset_ms": -200.0,
+      "requested_offset_ms": -500.0,
+      "source": "vap-shift",
+      "score": 0.5752,
+      "event": "shift"
+    },
+    {
+      "turn_index": 20,
+      "offset_ms": 535.7,
+      "requested_offset_ms": 535.7,
+      "source": "vap-shift",
+      "score": -0.1103,
+      "event": "hold"
+    },
+    {
+      "turn_index": 21,
+      "offset_ms": -100.0,
+      "requested_offset_ms": -100.0,
+      "source": "vap-shift",
+      "score": 0.4622,
+      "event": "shift"
+    },
+    {
+      "turn_index": 22,
+      "offset_ms": -100.0,
+      "requested_offset_ms": -100.0,
+      "source": "vap-shift",
+      "score": 0.2725,
+      "event": "shift"
+    },
+    {
+      "turn_index": 23,
+      "offset_ms": 80.0,
+      "requested_offset_ms": 80.0,
+      "source": "vap-shift",
+      "score": 0.5353,
+      "event": "hold"
+    },
+    {
+      "turn_index": 24,
+      "offset_ms": -160.0,
+      "requested_offset_ms": -200.0,
+      "source": "backchannel-fixed",
+      "score": 1.0,
+      "event": "backchannel"
+    },
+    {
+      "turn_index": 25,
+      "offset_ms": -160.0,
+      "requested_offset_ms": -500.0,
+      "source": "vap-shift",
+      "score": 0.7513,
+      "event": "shift"
+    },
+    {
+      "turn_index": 26,
+      "offset_ms": 624.4,
+      "requested_offset_ms": 624.4,
+      "source": "vap-shift",
+      "score": -0.2291,
+      "event": "hold"
+    },
+    {
+      "turn_index": 27,
+      "offset_ms": 80.0,
+      "requested_offset_ms": 80.0,
+      "source": "vap-shift",
+      "score": 0.5415,
+      "event": "hold"
+    },
+    {
+      "turn_index": 28,
+      "offset_ms": -100.0,
+      "requested_offset_ms": -100.0,
+      "source": "vap-shift",
+      "score": 0.5038,
+      "event": "shift"
+    },
+    {
+      "turn_index": 29,
+      "offset_ms": 80.0,
+      "requested_offset_ms": 80.0,
+      "source": "vap-shift",
+      "score": 0.5591,
+      "event": "hold"
+    },
+    {
+      "turn_index": 30,
+      "offset_ms": -200.0,
+      "requested_offset_ms": -200.0,
+      "source": "backchannel-fixed",
+      "score": 1.0,
+      "event": "backchannel"
+    },
+    {
+      "turn_index": 31,
+      "offset_ms": -200.0,
+      "requested_offset_ms": -500.0,
+      "source": "vap-shift",
+      "score": 0.8585,
+      "event": "shift"
+    },
+    {
+      "turn_index": 32,
+      "offset_ms": -180.0,
+      "requested_offset_ms": -180.0,
+      "source": "vap-shift",
+      "score": 0.5113,
+      "event": "shift"
+    },
+    {
+      "turn_index": 33,
+      "offset_ms": -200.0,
+      "requested_offset_ms": -200.0,
+      "source": "backchannel-fixed",
+      "score": 1.0,
+      "event": "backchannel"
+    },
+    {
+      "turn_index": 34,
+      "offset_ms": -100.0,
+      "requested_offset_ms": -100.0,
+      "source": "vap-shift",
+      "score": 0.7351,
+      "event": "shift"
+    },
+    {
+      "turn_index": 35,
+      "offset_ms": -120.0,
+      "requested_offset_ms": -120.0,
+      "source": "vap-shift",
+      "score": 0.219,
+      "event": "shift"
+    },
+    {
+      "turn_index": 36,
+      "offset_ms": -140.0,
+      "requested_offset_ms": -140.0,
+      "source": "vap-shift",
+      "score": 0.4443,
+      "event": "shift"
+    },
+    {
+      "turn_index": 37,
+      "offset_ms": 227.9,
+      "requested_offset_ms": 227.9,
+      "source": "vap-shift",
+      "score": 0.3019,
+      "event": "hold"
+    },
+    {
+      "turn_index": 38,
+      "offset_ms": 80.0,
+      "requested_offset_ms": 80.0,
+      "source": "vap-shift",
+      "score": 0.5347,
+      "event": "hold"
+    },
+    {
+      "turn_index": 39,
+      "offset_ms": -200.0,
+      "requested_offset_ms": -200.0,
+      "source": "backchannel-fixed",
+      "score": 1.0,
+      "event": "backchannel"
+    },
+    {
+      "turn_index": 40,
+      "offset_ms": -180.0,
+      "requested_offset_ms": -180.0,
+      "source": "vap-shift",
+      "score": 0.7825,
+      "event": "shift"
+    },
+    {
+      "turn_index": 41,
+      "offset_ms": -160.0,
+      "requested_offset_ms": -160.0,
+      "source": "vap-shift",
+      "score": 0.4655,
+      "event": "shift"
+    },
+    {
+      "turn_index": 42,
+      "offset_ms": -200.0,
+      "requested_offset_ms": -200.0,
+      "source": "backchannel-fixed",
+      "score": 1.0,
+      "event": "backchannel"
+    },
+    {
+      "turn_index": 43,
+      "offset_ms": -240.0,
+      "requested_offset_ms": -500.0,
+      "source": "vap-shift",
+      "score": 0.7805,
+      "event": "shift"
+    },
+    {
+      "turn_index": 44,
+      "offset_ms": -120.0,
+      "requested_offset_ms": -120.0,
+      "source": "vap-shift",
+      "score": 0.3204,
+      "event": "shift"
+    },
+    {
+      "turn_index": 45,
+      "offset_ms": 80.0,
+      "requested_offset_ms": 80.0,
+      "source": "vap-shift",
+      "score": 0.5622,
+      "event": "hold"
+    },
+    {
+      "turn_index": 46,
+      "offset_ms": 210.1,
+      "requested_offset_ms": 210.1,
+      "source": "vap-shift",
+      "score": 0.3257,
+      "event": "hold"
+    },
+    {
+      "turn_index": 47,
+      "offset_ms": -180.0,
+      "requested_offset_ms": -180.0,
+      "source": "vap-shift",
+      "score": 0.1579,
+      "event": "shift"
+    },
+    {
+      "turn_index": 48,
+      "offset_ms": -180.0,
+      "requested_offset_ms": -180.0,
+      "source": "vap-shift",
+      "score": 0.1991,
+      "event": "shift"
+    },
+    {
+      "turn_index": 49,
+      "offset_ms": -140.0,
+      "requested_offset_ms": -140.0,
+      "source": "vap-shift",
+      "score": 0.3715,
+      "event": "shift"
+    },
+    {
+      "turn_index": 50,
+      "offset_ms": -100.0,
+      "requested_offset_ms": -100.0,
+      "source": "vap-shift",
+      "score": 0.1986,
+      "event": "shift"
+    },
+    {
+      "turn_index": 51,
+      "offset_ms": -140.0,
+      "requested_offset_ms": -140.0,
+      "source": "vap-shift",
+      "score": 0.4544,
+      "event": "shift"
+    },
+    {
+      "turn_index": 52,
+      "offset_ms": 207.5,
+      "requested_offset_ms": 207.5,
+      "source": "vap-shift",
+      "score": 0.3293,
+      "event": "hold"
+    },
+    {
+      "turn_index": 53,
+      "offset_ms": -500.0,
+      "requested_offset_ms": -500.0,
+      "source": "vap-shift",
+      "score": 0.3654,
+      "event": "shift"
+    },
+    {
+      "turn_index": 54,
+      "offset_ms": 127.8,
+      "requested_offset_ms": 127.8,
+      "source": "vap-shift",
+      "score": 0.436,
+      "event": "hold"
+    }
+  ],
+  "backchannel_mode": "none",
+  "backchannels": [],
+  "prompt_scope": "first-turn",
+  "temperature": 0.8,
+  "topk": 20,
+  "seed": 1,
+  "turns": [
+    {
+      "index": 0,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "こんにちは、",
+      "onset": 0.0,
+      "duration": 1.04,
+      "wav": "../audio/turns/turn000_S1.wav"
+    },
+    {
+      "index": 1,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "こんにちは、いいお天気ですね。",
+      "onset": 1.7424,
+      "duration": 3.04,
+      "wav": "../audio/turns/turn001_S2.wav"
+    },
+    {
+      "index": 2,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "週末は何をしていましたか？",
+      "onset": 4.6024,
+      "duration": 2.32,
+      "wav": "../audio/turns/turn002_S1.wav"
+    },
+    {
+      "index": 3,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "えーと、子どもと一緒に公園に行ってきました。",
+      "onset": 6.8224,
+      "duration": 3.36,
+      "wav": "../audio/turns/turn003_S2.wav"
+    },
+    {
+      "index": 4,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "公園いいですね。",
+      "onset": 10.0224,
+      "duration": 1.68,
+      "wav": "../audio/turns/turn004_S1.wav"
+    },
+    {
+      "index": 5,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "そうなんです。でも、",
+      "onset": 11.5624,
+      "duration": 1.36,
+      "wav": "../audio/turns/turn005_S2.wav"
+    },
+    {
+      "index": 6,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "うん",
+      "onset": 12.7224,
+      "duration": 0.4,
+      "wav": "../audio/turns/turn006_S1.wav"
+    },
+    {
+      "index": 7,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "走り回るのがすごくて、かなり疲れました。",
+      "onset": 13.0224,
+      "duration": 3.28,
+      "wav": "../audio/turns/turn007_S2.wav"
+    },
+    {
+      "index": 8,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "アハハ、想像がつきます。",
+      "onset": 16.4273,
+      "duration": 2.56,
+      "wav": "../audio/turns/turn008_S1.wav"
+    },
+    {
+      "index": 9,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "親はただついていくのみですもんね。",
+      "onset": 19.0895,
+      "duration": 2.4,
+      "wav": "../audio/turns/turn009_S2.wav"
+    },
+    {
+      "index": 10,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "本当にそうだと思います。",
+      "onset": 21.3495,
+      "duration": 2.0,
+      "wav": "../audio/turns/turn010_S1.wav"
+    },
+    {
+      "index": 11,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "その後は、家でゆっくり本を読んでいました。",
+      "onset": 23.6873,
+      "duration": 4.0,
+      "wav": "../audio/turns/turn011_S2.wav"
+    },
+    {
+      "index": 12,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "おお、読書ですか。",
+      "onset": 27.7673,
+      "duration": 2.24,
+      "wav": "../audio/turns/turn012_S1.wav"
+    },
+    {
+      "index": 13,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "はい。最近は専門書を読み直していて。",
+      "onset": 29.8273,
+      "duration": 3.44,
+      "wav": "../audio/turns/turn013_S2.wav"
+    },
+    {
+      "index": 14,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "勉強熱心ですね。",
+      "onset": 33.7421,
+      "duration": 1.6,
+      "wav": "../audio/turns/turn014_S1.wav"
+    },
+    {
+      "index": 15,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "うーん、今の仕事で必要なので。",
+      "onset": 35.2221,
+      "duration": 2.72,
+      "wav": "../audio/turns/turn015_S2.wav"
+    },
+    {
+      "index": 16,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "なるほど。お仕事に直結することなんですね。",
+      "onset": 38.0221,
+      "duration": 4.48,
+      "wav": "../audio/turns/turn016_S1.wav"
+    },
+    {
+      "index": 17,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "ええ。製造業の方にいるので、",
+      "onset": 42.3821,
+      "duration": 2.88,
+      "wav": "../audio/turns/turn017_S2.wav"
+    },
+    {
+      "index": 18,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "うん",
+      "onset": 45.0621,
+      "duration": 0.4,
+      "wav": "../audio/turns/turn018_S1.wav"
+    },
+    {
+      "index": 19,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "技術的な更新が激しくて。",
+      "onset": 45.2621,
+      "duration": 2.4,
+      "wav": "../audio/turns/turn019_S2.wav"
+    },
+    {
+      "index": 20,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "技術職なんですね。",
+      "onset": 48.1978,
+      "duration": 1.6,
+      "wav": "../audio/turns/turn020_S1.wav"
+    },
+    {
+      "index": 21,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "はい。日々勉強しないと置いていかれる気がして。",
+      "onset": 49.6978,
+      "duration": 3.6,
+      "wav": "../audio/turns/turn021_S2.wav"
+    },
+    {
+      "index": 22,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "その向上心、本当に尊敬します。",
+      "onset": 53.1978,
+      "duration": 2.96,
+      "wav": "../audio/turns/turn022_S1.wav"
+    },
+    {
+      "index": 23,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "ありがとうございます。ただ、",
+      "onset": 56.2378,
+      "duration": 1.92,
+      "wav": "../audio/turns/turn023_S2.wav"
+    },
+    {
+      "index": 24,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "うん",
+      "onset": 57.9978,
+      "duration": 0.32,
+      "wav": "../audio/turns/turn024_S1.wav"
+    },
+    {
+      "index": 25,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "自分の時間が全然足りないのが悩みで。",
+      "onset": 58.1578,
+      "duration": 3.12,
+      "wav": "../audio/turns/turn025_S2.wav"
+    },
+    {
+      "index": 26,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "ああ、分かります。",
+      "onset": 61.9023,
+      "duration": 1.84,
+      "wav": "../audio/turns/turn026_S1.wav"
+    },
+    {
+      "index": 27,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "仕事と家庭の両立って大変ですよね。",
+      "onset": 63.8222,
+      "duration": 3.44,
+      "wav": "../audio/turns/turn027_S2.wav"
+    },
+    {
+      "index": 28,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "本当に。私もつい欲張って予定を詰め込みがちです。",
+      "onset": 67.1623,
+      "duration": 4.64,
+      "wav": "../audio/turns/turn028_S1.wav"
+    },
+    {
+      "index": 29,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "そうですよね。あ、今の話、",
+      "onset": 71.8822,
+      "duration": 2.56,
+      "wav": "../audio/turns/turn029_S2.wav"
+    },
+    {
+      "index": 30,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "はい",
+      "onset": 74.2422,
+      "duration": 0.4,
+      "wav": "../audio/turns/turn030_S1.wav"
+    },
+    {
+      "index": 31,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "どういう意味でしたか？",
+      "onset": 74.4423,
+      "duration": 1.28,
+      "wav": "../audio/turns/turn031_S2.wav"
+    },
+    {
+      "index": 32,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "あ、すみません。私もやりたいことがたくさんあって、",
+      "onset": 75.5422,
+      "duration": 3.92,
+      "wav": "../audio/turns/turn032_S1.wav"
+    },
+    {
+      "index": 33,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "うん",
+      "onset": 79.2622,
+      "duration": 0.4,
+      "wav": "../audio/turns/turn033_S2.wav"
+    },
+    {
+      "index": 34,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "つい無理にスケジュールを組んでしまうという意味です。",
+      "onset": 79.5623,
+      "duration": 3.12,
+      "wav": "../audio/turns/turn034_S1.wav"
+    },
+    {
+      "index": 35,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "あ、なるほど。そういうことですね。",
+      "onset": 82.5623,
+      "duration": 2.72,
+      "wav": "../audio/turns/turn035_S2.wav"
+    },
+    {
+      "index": 36,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "さっき、専門書を読み直していたって言ってましたよね。",
+      "onset": 85.1423,
+      "duration": 4.24,
+      "wav": "../audio/turns/turn036_S1.wav"
+    },
+    {
+      "index": 37,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "はい、そうでした。",
+      "onset": 89.6102,
+      "duration": 1.04,
+      "wav": "../audio/turns/turn037_S2.wav"
+    },
+    {
+      "index": 38,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "集中して読む時間を作るの、",
+      "onset": 90.7302,
+      "duration": 2.48,
+      "wav": "../audio/turns/turn038_S1.wav"
+    },
+    {
+      "index": 39,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "うん",
+      "onset": 93.0102,
+      "duration": 0.48,
+      "wav": "../audio/turns/turn039_S2.wav"
+    },
+    {
+      "index": 40,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "結構難しいんじゃないですか？",
+      "onset": 93.3102,
+      "duration": 2.08,
+      "wav": "../audio/turns/turn040_S1.wav"
+    },
+    {
+      "index": 41,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "本当にそうなんです。子どもが寝た後に、",
+      "onset": 95.2302,
+      "duration": 3.6,
+      "wav": "../audio/turns/turn041_S2.wav"
+    },
+    {
+      "index": 42,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "うん",
+      "onset": 98.6302,
+      "duration": 0.48,
+      "wav": "../audio/turns/turn042_S1.wav"
+    },
+    {
+      "index": 43,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "隙間時間でなんとか読んでいます。",
+      "onset": 98.8702,
+      "duration": 2.48,
+      "wav": "../audio/turns/turn043_S2.wav"
+    },
+    {
+      "index": 44,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "それは大変ですね。",
+      "onset": 101.2302,
+      "duration": 1.6,
+      "wav": "../audio/turns/turn044_S1.wav"
+    },
+    {
+      "index": 45,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "でも、理解できた時の達成感があるので。",
+      "onset": 102.9102,
+      "duration": 4.4,
+      "wav": "../audio/turns/turn045_S2.wav"
+    },
+    {
+      "index": 46,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "その感覚、いいですよね。",
+      "onset": 107.5203,
+      "duration": 2.56,
+      "wav": "../audio/turns/turn046_S1.wav"
+    },
+    {
+      "index": 47,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "はい。成長を感じられるのが一番の喜びです。",
+      "onset": 109.9002,
+      "duration": 4.0,
+      "wav": "../audio/turns/turn047_S2.wav"
+    },
+    {
+      "index": 48,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "前向きで素敵です。",
+      "onset": 113.7202,
+      "duration": 1.36,
+      "wav": "../audio/turns/turn048_S1.wav"
+    },
+    {
+      "index": 49,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "まあ、たまには全部忘れて寝たいですけどね。",
+      "onset": 114.9403,
+      "duration": 2.96,
+      "wav": "../audio/turns/turn049_S2.wav"
+    },
+    {
+      "index": 50,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "アハハ、それは正解だと思います。",
+      "onset": 117.8003,
+      "duration": 3.04,
+      "wav": "../audio/turns/turn050_S1.wav"
+    },
+    {
+      "index": 51,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "あ、もうこんな時間。",
+      "onset": 120.7002,
+      "duration": 1.44,
+      "wav": "../audio/turns/turn051_S2.wav"
+    },
+    {
+      "index": 52,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "おっと。",
+      "onset": 122.3478,
+      "duration": 1.52,
+      "wav": "../audio/turns/turn052_S1.wav"
+    },
+    {
+      "index": 53,
+      "speaker": "[S2]",
+      "channel": 1,
+      "text": "すみません、そろそろ次があるので失礼しますね。",
+      "onset": 123.3678,
+      "duration": 3.84,
+      "wav": "../audio/turns/turn053_S2.wav"
+    },
+    {
+      "index": 54,
+      "speaker": "[S1]",
+      "channel": 0,
+      "text": "はい、お疲れ様でした。",
+      "onset": 127.3355,
+      "duration": 2.0,
+      "wav": "../audio/turns/turn054_S1.wav"
+    }
+  ],
+  "vap_artifacts": {
+    "analysis_wav": "../diagnostics/gd_t01_00002_vap_bc200_s1ref_temp08_firstturn_seed1.vap_input.wav",
+    "analysis_manifest": "../diagnostics/gd_t01_00002_vap_bc200_s1ref_temp08_firstturn_seed1.vap_input.manifest.json",
+    "turn_timing_json": "../diagnostics/gd_t01_00002_vap_bc200_s1ref_temp08_firstturn_seed1.vap_turns.json",
+    "trace_json": "../diagnostics/gd_t01_00002_vap_bc200_s1ref_temp08_firstturn_seed1.vap_trace.json"
+  }
+}
