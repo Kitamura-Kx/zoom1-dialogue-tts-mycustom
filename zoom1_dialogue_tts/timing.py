@@ -15,7 +15,7 @@ class TimingConfig:
     overlap_std_ms: float = 400.0
     overlap_max_ms: float = 800.0
     max_overlap_fraction: float = 0.5
-    seed: int = 0
+    seed: int = 1
 
 
 def sample_onsets(turns: list[dict], sample_lengths: list[int], sample_rate: int,

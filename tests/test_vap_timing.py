@@ -31,6 +31,29 @@ def test_hold_at_boundary_produces_bounded_gap():
     assert 80.0 < result[0]["offset_ms"] <= 1200.0
 
 
+def test_short_backchannel_can_override_hold_with_fixed_overlap():
+    turns = [
+        {"speaker": "[S1]", "channel": 0, "onset": 0.0, "duration": 2.0,
+         "text": "説明を続けます。"},
+        {"speaker": "[S2]", "channel": 1, "onset": 2.0, "duration": 0.4,
+         "text": "うん"},
+    ]
+    frames = [
+        {"time": 1.5, "p_now": [0.8, 0.1], "p_future": [0.8, 0.1]},
+        {"time": 1.8, "p_now": [0.7, 0.2], "p_future": [0.8, 0.2]},
+    ]
+    result = predict_turn_timing(
+        turns, frames, backchannel_overlap_ms=200.0
+    )
+    assert result[0] == {
+        "turn_index": 1,
+        "offset_ms": -200.0,
+        "score": 1.0,
+        "event": "backchannel",
+        "source": "backchannel-fixed",
+    }
+
+
 def test_vap_trace_requires_two_channels():
     with pytest.raises(ValueError, match="two channels"):
         predict_turn_timing(

@@ -69,6 +69,33 @@ uv run zoom1-dialogue-tts examples/dialogue.txt -o out/dialogue.wav \
 参照音声を省略した場合は、モデルが生成する話者音色を使います。相槌は各話者の最初の生成
 ターンを声の参照として再合成するため、聞き手と同じ音色になります。
 
+参照音声が相手話者の生成へ直接影響するのを避けたい場合は、参照を指定話者の最初のターン
+だけに適用できます。その後は、最初に生成したターンを含む通常の対話履歴だけを使用します。
+
+```bash
+uv run zoom1-dialogue-tts examples/dialogue.txt -o out/first-turn-prompt.wav \
+  --prompt-s1 voice_s1.wav "参照音声の書き起こし" \
+  --prompt-scope first-turn
+```
+
+既定は`--prompt-scope first-turn`です。参照音声を全ターンの文脈へ含める従来方式が
+必要な場合だけ、`--prompt-scope all`を明示してください。
+
+生成の既定値は、比較評価で安定していた`--temperature 0.8`、`--seed 1`です。
+したがって通常はこれらを省略でき、変更したい場合だけ明示します。
+
+### 複数ファイルを一度のモデルロードで生成する
+
+`--batch INPUT OUTPUT`を繰り返すと、モデルを一度だけロードして複数の対話を順番に生成
+できます。参照音声や生成設定は全入力で共通です。
+
+```bash
+uv run zoom1-dialogue-tts \
+  --batch inputs/dialogue1.txt out/dialogue1.wav \
+  --batch inputs/dialogue2.txt out/dialogue2.wav \
+  --prompt-s1 voice_s1.wav "参照音声の書き起こし"
+```
+
 ## 相槌タイミング
 
 既定の`stat`モードは、Zoom1の相槌頻度（約3.1回/分）に基づいて長い発話へ相槌を配置します。
@@ -113,12 +140,32 @@ uv pip install --python .venv-vap/bin/python \
 ```bash
 # 推奨: FireRed生成、VAP解析、FTO適用を1コマンドで実行
 uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_dialogue.wav \
-  --turn-timing vap-auto --vap-python .venv-vap/bin/python --seed 0
+  --turn-timing vap-auto --vap-python .venv-vap/bin/python --seed 1
 ```
 
 FireRedTTS-2による各ターンの生成は1回だけです。生成後にターン分離音声をMaAIへ渡し、
 予測FTOを同じ音声へ適用します。`out/vap_dialogue.vap_input.wav`、VAP trace、境界JSONも
 診断用に保存され、最終manifestの`vap_artifacts`から参照できます。
+
+### 台本内相槌を固定FTOで扱う（現在の推奨構成）
+
+台本に含まれる短い「うん」「はい」などを通常のSHIFT/HOLD判定から除外し、軽く重ねる場合は
+`--backchannel-turn-overlap-ms`を指定します。後処理で新しい相槌を追加しない運用では、既定の
+統計相槌を止める`--backchannels none`も必ず指定します。
+
+```bash
+uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_dialogue.wav \
+  --turn-timing vap-auto --vap-python .venv-vap/bin/python \
+  --backchannel-turn-overlap-ms 200 --backchannels none
+```
+
+`200`は要求する重なり量の絶対値で、相槌の要求FTOは`-200 ms`になります。対象は生成音声が
+1.2秒以下で、句読点を除いた本文が「うん／はい／ええ／ああ／へえ／うんうん／そうですね／
+なるほど」のいずれかに完全一致するターンです。実適用値は前後の短い方のターン長の50%までに
+制限されます。固定FTO適用後のVAP再解析は行いません。
+
+台本内相槌と後処理による追加相槌の違い、処理順、SHIFT/HOLD式、manifestの読み方を含む正確な
+仕様は[「VAPターン境界と台本内相槌の固定FTO」](docs/vap-scripted-backchannels.md)を参照してください。
 
 `vap_turns.json`は次の形式です。負値が重なり、正値が間です。
 
@@ -137,11 +184,11 @@ MaAIは標準依存には含めていません。保存したVAP traceを`--trac
 
 ```bash
 uv run zoom1-dialogue-tts examples/dialogue.txt -o out/base.wav \
-  --turn-timing none --backchannels none --seed 0
+  --turn-timing none --backchannels none --seed 1
 .venv-vap/bin/python tools/vap_turn_timing.py \
   out/base.wav out/base.manifest.json out/vap_turns.json --save-trace out/vap_trace.json
 uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_manual.wav \
-  --turn-timing vap --turn-vap-json out/vap_turns.json --seed 0
+  --turn-timing vap --turn-vap-json out/vap_turns.json --seed 1
 ```
 
 ## モデルvariant

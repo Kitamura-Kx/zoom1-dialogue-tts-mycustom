@@ -29,18 +29,33 @@ def _prompt_segments(model, prompts):
 
 
 def generate_turns(model, turns: list[Turn], prompts: list[tuple[str, str, str]],
-                   temperature: float, topk: int, max_turn_ms: float) -> list[dict]:
+                   temperature: float, topk: int, max_turn_ms: float,
+                   prompt_scope: str = "first-turn") -> list[dict]:
     import torchaudio
     from fireredtts2.llm.utils import Segment
 
+    if prompt_scope not in {"all", "first-turn"}:
+        raise ValueError(f"unsupported prompt scope: {prompt_scope}")
     prompt_context = _prompt_segments(model, prompts)
+    prompt_by_speaker = {
+        speaker: segment for (speaker, _wav, _text), segment
+        in zip(prompts, prompt_context)
+    }
+    prompted_speakers = set()
     generated_context = []
     result = []
     for index, turn in enumerate(turns):
+        if prompt_scope == "all":
+            active_prompts = prompt_context
+        elif turn.speaker in prompt_by_speaker and turn.speaker not in prompted_speakers:
+            active_prompts = [prompt_by_speaker[turn.speaker]]
+            prompted_speakers.add(turn.speaker)
+        else:
+            active_prompts = []
         audio = model.generate(
             text=turn.text,
             speaker=turn.speaker,
-            context=prompt_context + generated_context,
+            context=active_prompts + generated_context,
             max_audio_length_ms=max_turn_ms,
             temperature=temperature,
             topk=topk,
@@ -139,7 +154,9 @@ def _assemble(generated, onsets, banks, vap_points, seed):
 
 
 def _auto_vap_turn_timing(generated: list[dict], output_path: Path,
-                          vap_python: str, vap_device: str) -> tuple[list[dict], dict]:
+                          vap_python: str, vap_device: str,
+                          backchannel_turn_overlap_ms: float | None = None,
+                          ) -> tuple[list[dict], dict]:
     """Run MaAI once on sequential turns and preserve its diagnostic artifacts."""
     import torchaudio
 
@@ -179,6 +196,10 @@ def _auto_vap_turn_timing(generated: list[dict], output_path: Path,
         str(input_wav), str(input_manifest), str(timing_json),
         "--save-trace", str(trace_json), "--device", vap_device,
     ]
+    if backchannel_turn_overlap_ms is not None:
+        command.extend([
+            "--backchannel-turn-overlap-ms", str(backchannel_turn_overlap_ms)
+        ])
     print(f"[vap-auto] {' '.join(command[:3])} ...", flush=True)
     subprocess.run(command, check=True, env=env)
     artifacts = {
@@ -190,22 +211,32 @@ def _auto_vap_turn_timing(generated: list[dict], output_path: Path,
     return load_turn_timing(timing_json), artifacts
 
 
+def load_synthesis_model(model_dir: Path):
+    from fireredtts2.fireredtts2 import FireRedTTS2
+
+    return FireRedTTS2(pretrained_dir=str(model_dir), gen_type="dialogue", device="cuda")
+
+
 def synthesize(model_dir: Path, turns: list[Turn], output_path: Path,
                prompts: list[tuple[str, str, str]], timing: TimingConfig,
                turn_timing: str, turn_vap_json: str | None,
                vap_python: str, vap_device: str,
                backchannels: str, vap_json: str | None, bc_per_minute: float,
                temperature: float, topk: int,
-               max_turn_ms: float) -> Path:
+               max_turn_ms: float, model=None,
+               backchannel_turn_overlap_ms: float | None = None,
+               prompt_scope: str = "first-turn") -> Path:
     import torchaudio
     import torch
-    from fireredtts2.fireredtts2 import FireRedTTS2
 
     torch.manual_seed(timing.seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(timing.seed)
-    model = FireRedTTS2(pretrained_dir=str(model_dir), gen_type="dialogue", device="cuda")
-    generated = generate_turns(model, turns, prompts, temperature, topk, max_turn_ms)
+    if model is None:
+        model = load_synthesis_model(model_dir)
+    generated = generate_turns(
+        model, turns, prompts, temperature, topk, max_turn_ms, prompt_scope
+    )
     lengths = [turn["audio"].numel() for turn in generated]
     base = 0
     for turn, length in zip(generated, lengths):
@@ -215,7 +246,8 @@ def synthesize(model_dir: Path, turns: list[Turn], output_path: Path,
     vap_artifacts = None
     if turn_timing == "vap-auto":
         predicted, vap_artifacts = _auto_vap_turn_timing(
-            generated, output_path, vap_python, vap_device
+            generated, output_path, vap_python, vap_device,
+            backchannel_turn_overlap_ms,
         )
         onsets, boundaries = apply_turn_timing(
             generated, lengths, SAMPLE_RATE, statistical_onsets, predicted, timing,
@@ -286,7 +318,9 @@ def synthesize(model_dir: Path, turns: list[Turn], output_path: Path,
         })
     manifest = {"sample_rate": SAMPLE_RATE, "layout": "stereo", "channel_map": {"[S1]": 0, "[S2]": 1},
                 "turn_timing_mode": turn_timing, "turn_boundaries": boundaries,
-                "backchannel_mode": backchannels, "backchannels": points, "turns": manifest_turns}
+                "backchannel_mode": backchannels, "backchannels": points,
+                "prompt_scope": prompt_scope, "temperature": temperature,
+                "topk": topk, "seed": timing.seed, "turns": manifest_turns}
     if vap_artifacts:
         manifest["vap_artifacts"] = vap_artifacts
     output_path.with_suffix(".manifest.json").write_text(

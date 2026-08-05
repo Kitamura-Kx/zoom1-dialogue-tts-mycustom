@@ -143,12 +143,14 @@
     --variant drop \
     --turn-timing vap-auto \
     --vap-python .venv-vap/bin/python \
+    --backchannel-turn-overlap-ms 200 \
+    --backchannels none \
     -o out/dialogue.wav</code></pre>
       </div>
       <div class="usage-grid">
         <div><span class="usage-number">01</span><h3>Script</h3><p>`[S1]`と`[S2]`で始まる日本語対話を用意します。JSON/JSONLにも対応します。</p></div>
         <div><span class="usage-number">02</span><h3>Voices</h3><p>参照音声を省略して生成音色を使うか、許諾済み音声を話者ごとに指定します。</p></div>
-        <div><span class="usage-number">03</span><h3>Timing</h3><p>`--turn-timing vap-auto`で生成からVAP SHIFT適用まで1コマンドです。未予測境界はZoom1統計へfallbackします。</p></div>
+        <div><span class="usage-number">03</span><h3>Timing</h3><p><code>vap-auto</code>で通常境界をSHIFT/HOLD判定し、短い台本内相槌だけ固定FTOで軽く重ねます。新しい相槌音声は追加しません。</p></div>
       </div>
     </section>
 
@@ -163,13 +165,13 @@
         <i aria-hidden="true">→</i>
         <div class="flow-step"><span>Synthesis</span><b>FireRedTTS-2</b><small>Zoom1 fine-tune</small></div>
         <i aria-hidden="true">→</i>
-        <div class="flow-step"><span>Timing</span><b>VAP SHIFT + BC</b><small>gap · overlap · backchannel</small></div>
+        <div class="flow-step"><span>Timing</span><b>VAP + scripted BC FTO</b><small>gap · overlap · no inserted BC</small></div>
         <i aria-hidden="true">→</i>
         <div class="flow-step output-step"><span>Output</span><b>Stereo WAV</b><small>L=S1 · R=S2</small></div>
       </div>
       <div class="limitations">
         <h3>Current scope</h3>
-        <p>VAPは短い相槌に加え、通常ターンのSHIFT/HOLDから間・食い込みを制御できます。FireRed生成、VAP解析、FTO適用は1コマンドで実行できます。</p>
+        <p>通常ターンはVAPのSHIFT/HOLD、1.2秒以下の台本内相槌は固定の負FTOで配置します。相槌は台本にある音声だけを使い、配置後のVAP再解析は行いません。</p>
       </div>
     </section>
   </main>

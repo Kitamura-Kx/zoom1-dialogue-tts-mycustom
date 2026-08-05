@@ -20,6 +20,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--lookback-ms", type=float, default=800.0)
     parser.add_argument("--max-gap-ms", type=float, default=1200.0)
     parser.add_argument("--shift-threshold", type=float, default=0.15)
+    parser.add_argument(
+        "--backchannel-turn-overlap-ms",
+        type=float,
+        help="force recognized short backchannel turns to start this many ms early",
+    )
     parser.add_argument("--device", default="cpu")
     return parser
 
@@ -41,12 +46,16 @@ def main(argv: list[str] | None = None) -> None:
         lookback_ms=args.lookback_ms,
         max_gap_ms=args.max_gap_ms,
         shift_threshold=args.shift_threshold,
+        backchannel_overlap_ms=args.backchannel_turn_overlap_ms,
     )
     Path(args.output).write_text(
         json.dumps(timing, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    shifts = sum(item["event"] == "shift" for item in timing)
-    print(f"[vap-turn] {len(timing)} boundaries: {shifts} overlap / {len(timing)-shifts} gap")
+    overlaps = sum(float(item["offset_ms"]) < 0 for item in timing)
+    print(
+        f"[vap-turn] {len(timing)} boundaries: "
+        f"{overlaps} overlap / {len(timing)-overlaps} gap"
+    )
     print(f"-> {args.output}")
 
 

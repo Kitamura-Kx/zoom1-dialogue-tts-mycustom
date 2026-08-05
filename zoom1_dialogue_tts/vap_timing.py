@@ -3,6 +3,16 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 
+SHORT_BACKCHANNELS = {
+    "うん", "はい", "ええ", "ああ", "へえ", "うんうん", "そうですね", "なるほど",
+}
+
+
+def is_short_backchannel(turn: dict, max_duration: float = 1.2) -> bool:
+    text = str(turn.get("text", "")).strip().strip("。、！？!? ")
+    return text in SHORT_BACKCHANNELS and float(turn.get("duration", 0.0)) <= max_duration
+
+
 def _channel_values(value) -> list[float]:
     """Normalize MaAI scalars/lists/arrays to two channel probabilities."""
     if hasattr(value, "detach"):
@@ -35,7 +45,8 @@ def predict_turn_timing(turns: list[dict], frames: list[dict], *,
                         max_gap_ms: float = 1200.0,
                         shift_threshold: float = 0.15,
                         decision_margin_ms: float = 100.0,
-                        min_gap_ms: float = 80.0) -> list[dict]:
+                        min_gap_ms: float = 80.0,
+                        backchannel_overlap_ms: float | None = None) -> list[dict]:
     """Convert VAP floor probabilities into context-dependent FTOs.
 
     A confident next-speaker advantage before the current turn ends produces
@@ -44,6 +55,8 @@ def predict_turn_timing(turns: list[dict], frames: list[dict], *,
     """
     if max_overlap_ms <= 0 or lookback_ms < max_overlap_ms or max_gap_ms <= 0:
         raise ValueError("timing limits must be positive and lookback must cover max overlap")
+    if backchannel_overlap_ms is not None and backchannel_overlap_ms <= 0:
+        raise ValueError("backchannel overlap must be positive")
     if not frames:
         raise ValueError("VAP trace is empty")
     frames = sorted(frames, key=lambda frame: float(frame["time"]))
@@ -64,6 +77,15 @@ def predict_turn_timing(turns: list[dict], frames: list[dict], *,
         previous_end = float(previous["onset"]) + float(previous["duration"])
         previous_channel = int(previous["channel"])
         next_channel = int(current["channel"])
+        if backchannel_overlap_ms is not None and is_short_backchannel(current):
+            output.append({
+                "turn_index": index,
+                "offset_ms": -round(float(backchannel_overlap_ms), 1),
+                "score": 1.0,
+                "event": "backchannel",
+                "source": "backchannel-fixed",
+            })
+            continue
         window = [
             frame for frame in frames
             if previous_end - lookback <= float(frame["time"]) <= previous_end - margin
