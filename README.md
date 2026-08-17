@@ -1,4 +1,4 @@
-# Zoom1 Dialogue TTS
+# Zoom1 Dialogue TTS — custom inference workflow
 
 [Demo & audio samples](https://llm-jp.github.io/zoom1-dialogue-tts/) | [Hugging Face model](https://huggingface.co/llm-jp/zoom1-dialogue-tts)
 
@@ -10,6 +10,34 @@ Zoom1統計に基づく時間編集で、話者交代時の間・重なりと聞
 - Model: [llm-jp/zoom1-dialogue-tts](https://huggingface.co/llm-jp/zoom1-dialogue-tts)
 - Base implementation: [FireRedTeam/FireRedTTS2](https://github.com/FireRedTeam/FireRedTTS2)
 - Output: 24 kHz, 2-channel WAV (left=S1, right=S2)
+
+## このリポジトリについて
+
+このリポジトリは、提供を受けたZoom1 Dialogue TTSの推論ページ／実装を、対話音声合成の
+比較実験向けにカスタマイズして保存したものです。学習済みモデルそのものを再配布する
+リポジトリではありません。主な変更点は次のとおりです。
+
+- 再現可能な生成用の`--seed`と`--temperature`（既定値は1と0.8）
+- S1/S2それぞれに限定した参照音声と正確な文字起こし、および`first-turn` prompt scope
+- MaAI VAPによる通常対話ターンの間・重なりの配置
+- MaAIの`bc`モデルによる、台本内の割り込み相槌専用の配置
+- 相槌を除いた解析音声を使うことによる、相槌タイミング推定時の音声リーク防止
+
+元実装、同梱コードの由来、ライセンス上の扱いは[NOTICE](NOTICE)を参照してください。
+
+## 必要なモデルとアクセス権
+
+GitHubから取得できるのは推論コードだけです。実行時には次のモデルが必要です。
+
+| 用途 | モデル／パッケージ | 読み込み方法 |
+|---|---|---|
+| 音声生成 | `llm-jp/zoom1-dialogue-tts` | Hugging Faceから自動取得。現在はprivateのためアクセス権が必要 |
+| codec/tokenizer | `FireRedTeam/FireRedTTS2` | Hugging Faceから必要ファイルだけ自動取得 |
+| 通常ターン配置 | MaAI `vap` | 別の`.venv-vap`環境で`maai`が初回利用時に読み込む |
+| 相槌ターン配置 | MaAI `bc` / `bc_2type` | 同じ`.venv-vap`環境で初回利用時に読み込む |
+
+モデル重み、Hugging Face token、ユーザー固有の参照音声はGitへcommitしないでください。
+参照音声には、利用・再配布の許諾を得た音声だけを使用してください。
 
 > [!IMPORTANT]
 > 現在、モデルリポジトリはprivateです。初回実行前にアクセス権のあるHugging Face
@@ -25,8 +53,8 @@ CUDA GPUを搭載したLinux環境を想定しています。`uv`を使うとPyt
 含む環境を再現できます。
 
 ```bash
-git clone https://github.com/llm-jp/zoom1-dialogue-tts.git
-cd zoom1-dialogue-tts
+git clone https://github.com/Kitamura-Kx/zoom1-dialogue-tts-mycustom.git
+cd zoom1-dialogue-tts-mycustom
 uv sync --extra test
 uv run hf auth login  # モデルがprivateの間だけ
 ```
@@ -34,6 +62,11 @@ uv run hf auth login  # モデルがprivateの間だけ
 初回推論時に、Zoom1 fine-tuneと公式FireRedTTS-2のcodec/tokenizerをHugging Faceから
 自動取得します。`drop`と`keep`のうち、指定した一方のチェックポイントだけを取得します。
 モデルと公式baseは検証済みrevisionに固定され、不要なbase LLM重みは取得しません。
+
+既定モデルへアクセスできない場合は、同じFireRedTTS-2レイアウトのチェックポイントを
+`--model-id OWNER/REPOSITORY`で指定するか、`ZOOM1_TTS_MODEL_ID`環境変数で設定します。
+ローカルの参照音声は`--prompt-s1`／`--prompt-s2`で実行時に渡し、リポジトリ内へ置く必要は
+ありません。
 
 ## クイックスタート
 
@@ -128,6 +161,7 @@ SHIFTをターン末尾より前に予測した境界は重ね、現在話者の
 
 MaAIはFireRedTTS-2と依存関係が異なるため、初回だけ別環境を作成します。PortAudioを導入
 できない計算ノードでも、本ツールがWAV解析時にPyAudioを自動スタブ化するため利用できます。
+`--turn-timing stat`または`none`だけを使う場合、このMaAI環境は不要です。
 
 ```bash
 uv venv --python 3.12 .venv-vap
@@ -147,25 +181,38 @@ FireRedTTS-2による各ターンの生成は1回だけです。生成後にタ�
 予測FTOを同じ音声へ適用します。`out/vap_dialogue.vap_input.wav`、VAP trace、境界JSONも
 診断用に保存され、最終manifestの`vap_artifacts`から参照できます。
 
-### 台本内相槌を固定FTOで扱う（現在の推奨構成）
+### 台本内相槌をMaAI相槌モデルで配置する（現在の推奨構成）
 
-台本に含まれる短い「うん」「はい」などを通常のSHIFT/HOLD判定から除外し、軽く重ねる場合は
-`--backchannel-turn-overlap-ms`を指定します。後処理で新しい相槌を追加しない運用では、既定の
-統計相槌を止める`--backchannels none`も必ず指定します。
+`vap-auto`では、台本内の割り込み相槌を通常のSHIFT/HOLD判定から除外し、MaAIの相槌専用
+`bc`モデルが出す`p_bc`のピークへ配置します。解析音声から相槌自体を除くため、モデルが
+すでに鳴った相槌を見てしまうリークも避けます。後処理で新しい相槌を追加しない運用では、
+既定の統計相槌を止める`--backchannels none`も指定します。
 
 ```bash
 uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_dialogue.wav \
   --turn-timing vap-auto --vap-python .venv-vap/bin/python \
-  --backchannel-turn-overlap-ms 200 --backchannels none
+  --backchannel-turn-timing vap \
+  --backchannel-search-window-s 0.6 \
+  --backchannels none
 ```
 
-`200`は要求する重なり量の絶対値で、相槌の要求FTOは`-200 ms`になります。対象は生成音声が
-1.2秒以下で、句読点を除いた本文が「うん／はい／ええ／ああ／へえ／うんうん／そうですね／
-なるほど」のいずれかに完全一致するターンです。実適用値は前後の短い方のターン長の50%までに
-制限されます。固定FTO適用後のVAP再解析は行いません。
+相槌候補は短い相槌語であり、かつ「前後が同じ相手話者」「直前発話が句点等で完結していない」
+ターンです。独立応答としての「そうですね。」は通常ターンのまま残します。台本上の直前位置を
+アンカーとし、その前後`0.6`秒で`p_bc`最大の100 msフレームを選びます。`p_bc`はチャネル
+非対称なので、左右を入れ替えた解析も行い、アンカー近傍の平均スコアが高い順序を自動採用します。
+`bc_2type`のreact/emo予測もmanifestの診断情報へ保存します。
+
+従来の固定FTOが必要な場合は、後方互換モードを明示できます。
+
+```bash
+uv run zoom1-dialogue-tts examples/dialogue.txt -o out/fixed_bc.wav \
+  --turn-timing vap-auto --vap-python .venv-vap/bin/python \
+  --backchannel-turn-timing fixed --backchannel-turn-overlap-ms 200 \
+  --backchannels none
+```
 
 台本内相槌と後処理による追加相槌の違い、処理順、SHIFT/HOLD式、manifestの読み方を含む正確な
-仕様は[「VAPターン境界と台本内相槌の固定FTO」](docs/vap-scripted-backchannels.md)を参照してください。
+仕様は[「VAPターン境界と台本内相槌」](docs/vap-scripted-backchannels.md)を参照してください。
 
 `vap_turns.json`は次の形式です。負値が重なり、正値が間です。
 
