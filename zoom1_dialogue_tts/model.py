@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import uuid
 from pathlib import Path
 
 BASE_MODEL_ID = "FireRedTeam/FireRedTTS2"
@@ -10,6 +11,22 @@ DEFAULT_MODEL_ID = os.environ.get(
     "ZOOM1_TTS_MODEL_ID", "llm-jp/zoom1-dialogue-tts"
 )
 REQUIRED_BASE = ("config_llm.json", "config_codec.json", "codec.pt", "Qwen2.5-1.5B")
+
+
+def _atomic_symlink(source: Path, target: Path, *, directory: bool = False) -> None:
+    """Install or replace a cache symlink without races between GPU workers."""
+    if target.is_symlink():
+        try:
+            if target.resolve() == source.resolve():
+                return
+        except FileNotFoundError:
+            pass
+    temporary = target.with_name(f".{target.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}")
+    temporary.symlink_to(source, target_is_directory=directory)
+    try:
+        os.replace(temporary, target)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def _checkpoint(root: Path) -> Path | None:
@@ -73,10 +90,7 @@ def resolve_model(model_id: str | None, variant: str = "drop",
         if not source.exists():
             raise FileNotFoundError(f"base model is missing {name}: {base}")
         target = merged / name
-        if not target.exists():
-            target.symlink_to(source, target_is_directory=source.is_dir())
+        _atomic_symlink(source, target, directory=source.is_dir())
     target = merged / "llm_posttrain.pt"
-    if target.is_symlink() or target.exists():
-        target.unlink()
-    target.symlink_to(ckpt)
+    _atomic_symlink(ckpt, target)
     return merged

@@ -20,9 +20,18 @@ def test_load_json(tmp_path):
     assert load_script(path)[0].speaker == "[S1]"
 
 
+def test_load_jsonl_pair_rows_and_ab_speakers(tmp_path):
+    path = tmp_path / "dialogue.jsonl"
+    path.write_text(
+        '["A", "こんにちは"]\n["B", "どうも"]\n', encoding="utf-8"
+    )
+    assert [(turn.speaker, turn.text) for turn in load_script(path)] == [
+        ("[S1]", "こんにちは"), ("[S2]", "どうも")
+    ]
+
+
 def test_reject_unknown_speaker(tmp_path):
     path = tmp_path / "dialogue.txt"
     path.write_text("[S3] unsupported\n", encoding="utf-8")
     with pytest.raises(ValueError):
         load_script(path)
-

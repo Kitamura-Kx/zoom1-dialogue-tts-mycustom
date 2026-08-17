@@ -1,8 +1,8 @@
-# VAPターン境界と台本内相槌の固定FTO
+# VAPターン境界と台本内相槌
 
-この文書は、通常ターンをMaAI VAPで配置し、台本に最初から含まれる短い相槌ターンだけを
-固定FTOで軽く重ねる運用の正本です。ここでいう「相槌」は、新しい発話を後処理で追加する
-機能ではありません。
+この文書は、通常ターンをMaAI VAPで配置し、台本に最初から含まれる割り込み相槌をMaAIの
+相槌専用`bc`モデルで配置する運用の正本です。ここでいう「相槌」は、新しい発話を後処理で
+追加する機能ではありません。固定FTO方式は後方互換として残しています。
 
 ## 採用する構成
 
@@ -10,18 +10,18 @@
 uv run zoom1-dialogue-tts input.txt -o out/dialogue.wav \
   --turn-timing vap-auto \
   --vap-python .venv-vap/bin/python \
-  --backchannel-turn-overlap-ms 200 \
+  --backchannel-turn-timing vap \
+  --backchannel-search-window-s 0.6 \
   --backchannels none
 ```
 
 - 通常ターン: MaAI VAPのSHIFT/HOLDから間または重なりを決める
-- 台本内の短い相槌ターン: SHIFT/HOLDを使わず、要求FTOを`-200 ms`に固定する
+- 台本内の割り込み相槌: SHIFT/HOLDを使わず、`mode="bc"`の`p_bc`ピークへ配置する
 - 新規の相槌音声: 追加しない（`--backchannels none`）
 - 相槌配置後のVAP再解析: 行わない
 
-`--backchannel-turn-overlap-ms`は正のミリ秒値で指定します。内部では負のFTOへ変換されるため、
-`200`を指定すると要求FTOは`-200 ms`になります。このオプションを省略した場合、相槌を含む
-すべてのターン境界に従来のVAP SHIFT/HOLD判定を使います。
+`--backchannel-turn-timing`を省略した場合も`vap`が選ばれます。`--backchannel-turn-overlap-ms`
+だけを指定した既存コマンドは後方互換のため`fixed`として扱います。
 
 ## 用語の区別
 
@@ -29,7 +29,7 @@ uv run zoom1-dialogue-tts input.txt -o out/dialogue.wav \
 
 | 種類 | 入力台本に発話があるか | 配置方法 |
 |---|---|---|
-| 台本内相槌ターン | ある（例: `[S2]うん`） | `--backchannel-turn-overlap-ms`で境界FTOを固定できる |
+| 台本内相槌ターン | ある（例: `[S2]うん`） | `p_bc`ピーク、または後方互換の固定FTO |
 | 後処理による追加相槌 | ない | `--backchannels stat`または`vap`で新しい相槌クリップを追加する |
 
 今回採用する構成は前者だけを使用します。後者を確実に無効化するため、コマンドには
@@ -39,15 +39,14 @@ uv run zoom1-dialogue-tts input.txt -o out/dialogue.wav \
 ## 処理順序
 
 1. FireRedTTS-2が台本を上から順に、各ターンをモノラル音声として1回生成する。
-2. ターン音声を無音・重なりなしで連結し、24 kHzステレオの`*.vap_input.wav`を作る。
-3. MaAI用に16 kHzへ変換し、10 Hz（100 msごと）で`p_now`と`p_future`を得る。
-4. 通常ターン境界はVAPのSHIFT/HOLDルールでFTOを予測する。
-5. 相槌ターン境界はVAP予測を上書きし、固定の負FTOを要求する。
-6. 安全制約を適用して同じターン波形を再配置し、最終ステレオWAVを作る。
+2. 割り込み相槌を解析対象から除き、24 kHzステレオの`*.vap_input.wav`を作る。
+3. MaAI用に16 kHzへ変換し、10 Hzで`bc`、`bc_2type`、`vap`を実行する。
+4. 通常ターン境界は修正版VAPルールでFTOを予測する。
+5. 相槌はテキストアンカー±0.6秒で`p_bc`が最大のフレームへ配置する。
+6. 相槌音声を同じターン波形へ戻し、最終ステレオWAVを作る。
 
-固定FTOを適用した最終音声をMaAIへ再入力する反復処理は行いません。後続の通常境界も、手順2の
-重なりなし音声から得た同じVAP traceに基づきます。この非反復方式を本プロジェクトの現在の
-運用として採用します。
+配置後の最終音声をMaAIへ再入力する反復処理は行いません。`p_bc`が自分の相槌音声を見て
+答え合わせをしないよう、解析音声には相槌を含めません。
 
 ## 通常ターンのVAP判定
 
@@ -64,9 +63,19 @@ floor_score = 0.65 * p_now + 0.35 * p_future
 - HOLD: 前話者の保持度から80〜1200 msの正のFTOを作る
 - VAP予測がない境界: Zoom1統計へフォールバックする
 
-## 相槌ターンの認識条件
+## 相槌ターンの認識条件（MaAI bc方式）
 
-次の両方を満たすターンを相槌として認識します。
+短い相槌語に加えて、前後が同じ相手話者であり、直前発話が句点・疑問符・感嘆符で完結して
+いないことを要求します。語彙だけで独立応答の「そうですね。」を相槌扱いするのを防ぎます。
+
+## MaAI bcによる配置
+
+台本上の直前実質ターン末尾をアンカーとし、既定では前後0.6秒の`p_bc`最大点を選びます。
+相槌の個数と大まかな位置は台本が決め、モデルは近傍のどの100 msフレームへ置くかを決めます。
+`p_bc`はチャネル非対称なので通常順と左右入替順を実行し、アンカー近傍の平均スコアが高い側を
+採用します。`bc_2type`のreact/emo判定は配置には使わず診断情報として保存します。
+
+## 固定FTOと安全制約（後方互換）
 
 1. 句読点と前後空白を除いた本文が次のいずれかに完全一致する。
 
@@ -79,8 +88,6 @@ floor_score = 0.65 * p_now + 0.35 * p_future
 部分一致は使いません。例えば「はい。きっと大丈夫です」は相槌ターンになりません。一方、
 「そうですね。」は句点を除去すると一致するため、1.2秒以下なら相槌として扱われます。独立した
 返答として扱いたい語がある場合は、`SHORT_BACKCHANNELS`の語彙を見直す必要があります。
-
-## 固定FTOと安全制約
 
 `--backchannel-turn-overlap-ms 200`の場合、相槌ターンの要求値は常に次です。
 
@@ -135,7 +142,8 @@ zoom1-dialogue-tts \
   --turn-timing vap-auto \
   --vap-python .venv-vap/bin/python \
   --vap-device cpu \
-  --backchannel-turn-overlap-ms 200 \
+  --backchannel-turn-timing vap \
+  --backchannel-search-window-s 0.6 \
   --backchannels none \
   --seed 1
 ```

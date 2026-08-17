@@ -49,7 +49,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--backchannel-turn-overlap-ms",
         type=float,
-        help="with vap-auto, force recognized short backchannel turns to overlap",
+        help="legacy fixed overlap; implies --backchannel-turn-timing fixed",
+    )
+    parser.add_argument(
+        "--backchannel-turn-timing",
+        choices=["vap", "fixed"],
+        default=None,
+        help="scripted interjections: MaAI bc timing (default) or legacy fixed overlap",
+    )
+    parser.add_argument(
+        "--backchannel-search-window-s",
+        type=float,
+        default=0.6,
+        help="MaAI p_bc peak search radius around each scripted interjection anchor",
     )
     parser.add_argument("--backchannels", choices=["stat", "vap", "none"], default="stat",
                         help="backchannel timing: Zoom1 statistics, VAP JSON, or disabled")
@@ -60,11 +72,21 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--topk", type=int, default=20)
     parser.add_argument("--max-turn-ms", type=float, default=30_000)
     parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument(
+        "--final-only", action="store_true",
+        help="keep only the final WAV; remove manifests, turn WAVs and VAP diagnostics",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
+    if args.backchannel_search_window_s <= 0:
+        raise SystemExit("--backchannel-search-window-s must be positive")
+    if args.backchannel_turn_timing == "fixed" and args.backchannel_turn_overlap_ms is None:
+        raise SystemExit(
+            "--backchannel-turn-timing fixed requires --backchannel-turn-overlap-ms"
+        )
     if args.batch and args.script:
         raise SystemExit("positional script and --batch cannot be used together")
     if not args.batch and not args.script:
@@ -102,7 +124,10 @@ def main(argv: list[str] | None = None) -> None:
             topk=args.topk,
             max_turn_ms=args.max_turn_ms,
             backchannel_turn_overlap_ms=args.backchannel_turn_overlap_ms,
+            backchannel_turn_timing=args.backchannel_turn_timing,
+            backchannel_search_window_s=args.backchannel_search_window_s,
             prompt_scope=args.prompt_scope,
+            final_only=args.final_only,
         )
         print(f"[done] {result} (left=S1, right=S2)")
 

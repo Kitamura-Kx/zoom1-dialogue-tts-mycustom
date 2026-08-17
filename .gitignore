@@ -11,3 +11,14 @@ out/
 !private_samples/*.wav
 *.pt
 *.safetensors
+*.o[0-9]*
+*.e[0-9]*
+quality_results/
+quality_runs/
+alignment_runs/
+parquet_runs/
+.cache/
+dataset_runs/
+optimized_pilot_inputs/
+quality_results_pilot/
+quality_results_pilot_v2/
