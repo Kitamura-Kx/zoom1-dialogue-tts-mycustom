@@ -45,8 +45,8 @@ GitHubから取得できるのは推論コードだけです。実行時には�
 |---|---|---|
 | 音声生成 | `llm-jp/zoom1-dialogue-tts` | Hugging Faceから自動取得。現在はprivateのためアクセス権が必要 |
 | codec/tokenizer | `FireRedTeam/FireRedTTS2` | Hugging Faceから必要ファイルだけ自動取得 |
-| 通常ターン配置 | MaAI `vap` | 別の`.venv-vap`環境で`maai`が初回利用時に読み込む |
-| 相槌ターン配置 | MaAI `bc` / `bc_2type` | 同じ`.venv-vap`環境で初回利用時に読み込む |
+| 通常ターン配置 | [`maai-kyoto/vap_jp_kyoto`](https://huggingface.co/maai-kyoto/vap_jp_kyoto)（MIT） | 別の`.venv-vap`環境で固定revisionを読み込む |
+| 台本内相槌配置 | [`maai-kyoto/vap_bc_jp`](https://huggingface.co/maai-kyoto/vap_bc_jp)（MIT） | 同じ`.venv-vap`環境で固定revisionを読み込む |
 
 モデル重み、Hugging Face token、ユーザー固有の参照音声はGitへcommitしないでください。
 参照音声には、利用・再配布の許諾を得た音声だけを使用してください。
@@ -327,8 +327,19 @@ uv run pytest
 
 ## ライセンス
 
-コードはApache License 2.0です。FireRedTTS-2もApache License 2.0で公開されています。
-モデルおよび参照音声については、それぞれのHugging Face model cardと音源の利用条件を確認してください。
+本リポジトリのコードはApache License 2.0です。同梱するFireRedTTS-2の実装もApache License 2.0です。
+標準の時間配置に使う以下の2モデルは、それぞれの固定revisionのモデルカードでMITと表記されています。
+
+| 用途 | モデル | ライセンス表記の出典 |
+| --- | --- | --- |
+| 通常ターンの間・重なり | `maai-kyoto/vap_jp_kyoto` | [MIT（固定revisionのモデルカード）](https://huggingface.co/maai-kyoto/vap_jp_kyoto/blob/fe24ac60d8fcc80463edde97ed90e3ceca5e5b88/README.md) |
+| 台本内相槌の時間配置 | `maai-kyoto/vap_bc_jp` | [MIT（固定revisionのモデルカード）](https://huggingface.co/maai-kyoto/vap_bc_jp/blob/309d7936f5a929870e3e02a563729b7dc8b78a6e/README.md) |
+
+商用の下流モデル利用を目的とした再作成に合わせ、通常ターン配置をMIT表記の
+`vap_jp_kyoto`へ変更しています。生成済み音声や学習済みモデル全体の利用条件は、
+TTS重み・参照音声・入力台本などの条件にも従います。コードのApache License 2.0や
+VAPモデルのMIT表記が、それらの利用権を一括して付与するものではありません。
+各モデルのHugging Face model cardと音源・台本の利用条件を確認してください。
 
 ## 謝辞
 
