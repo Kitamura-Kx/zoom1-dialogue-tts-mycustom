@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from .maai_models import model_options
+
 
 SHORT_BACKCHANNELS = {
     "うん", "はい", "ええ", "ああ", "へえ", "うんうん", "そうですね", "なるほど",
@@ -182,7 +184,7 @@ def run_maai_vap(wav_path: str, *, frame_rate: int = 10, device: str = "cpu") ->
         ], axis=1)
     frame_size = round(16000 / frame_rate)
     maai = Maai(
-        mode="vap", lang="jp", frame_rate=frame_rate,
+        mode="vap", **model_options("vap"), frame_rate=frame_rate,
         audio_ch1=MaaiInput.Zero(), audio_ch2=MaaiInput.Zero(), device=device,
     )
     maai.reset_runtime_state()
@@ -198,7 +200,7 @@ def run_maai_vap(wav_path: str, *, frame_rate: int = 10, device: str = "cpu") ->
                 result = maai.result_dict_queue.get_nowait()
             except Exception:
                 break
-            frames.append(maai_result_frame(result, result_index / frame_rate))
+            frames.append(maai_result_frame(result, (result_index + 1) / frame_rate))
             result_index += 1
     if not frames:
         raise RuntimeError("MaAI returned no VAP frames")

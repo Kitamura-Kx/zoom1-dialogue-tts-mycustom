@@ -8,6 +8,8 @@ import sys
 import types
 from pathlib import Path
 
+from .maai_models import TIMING_MODELS, model_options
+
 
 SPECS = {
     "bc": (("p_bc", "p_bc_detect"), 20),
@@ -69,7 +71,7 @@ def run_stream(wav_path: str, mode: str, keys: tuple[str, ...], *, context: int,
     model = models.get(model_key) if models is not None else None
     if model is None:
         model = Maai(
-            mode=mode, lang="jp", frame_rate=frame_rate, context_len_sec=context,
+            mode=mode, **model_options(mode), frame_rate=frame_rate, context_len_sec=context,
             audio_ch1=MaaiInput.Zero(), audio_ch2=MaaiInput.Zero(), device=device,
         )
         if models is not None:
@@ -97,7 +99,8 @@ def run_stream(wav_path: str, mode: str, keys: tuple[str, ...], *, context: int,
 
 def collect_traces(wav: str, modes: list[str], frame_rate: int, device: str,
                    models=None) -> dict:
-    traces = {}
+    models = {} if models is None else models
+    traces = {"models": {mode: TIMING_MODELS[mode] for mode in modes if mode in TIMING_MODELS}}
     for mode in modes:
         keys, context = SPECS[mode]
         swaps = (False, True) if mode != "vap" else (False,)
@@ -128,7 +131,7 @@ def serve(socket_path: Path, device: str, frame_rate: int) -> None:
                     break
                 try:
                     traces = collect_traces(
-                        request["wav"], request.get("modes", ["bc", "bc_2type", "vap"]),
+                        request["wav"], request.get("modes", ["bc", "vap"]),
                         frame_rate, device, models=models,
                     )
                     Path(request["output"]).write_text(
@@ -146,7 +149,7 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("wav")
     parser.add_argument("output")
-    parser.add_argument("--modes", nargs="+", default=["bc", "bc_2type", "vap"],
+    parser.add_argument("--modes", nargs="+", default=["bc", "vap"],
                         choices=list(SPECS))
     parser.add_argument("--frame-rate", type=int, default=10)
     parser.add_argument("--device", default="cpu")

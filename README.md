@@ -25,6 +25,18 @@ Zoom1統計に基づく時間編集で、話者交代時の間・重なりと聞
 
 元実装、同梱コードの由来、ライセンス上の扱いは[NOTICE](NOTICE)を参照してください。
 
+## 標準の合成方式
+
+標準設定は、`drop`・seed 1・temperature 0.8・top-k 20・BF16でターン音声を生成し、
+通常ターンを `maai-kyoto/vap_jp_kyoto`、台本内相槌を `maai-kyoto/vap_bc_jp` で配置します。
+モデルrevisionはコードで固定しています。台本にない相槌は追加しません。
+同梱の `references/turn000_S1.wav` と書き起こしをS1の最初のターンだけに適用します。
+別の参照は `--prompt-s1`、参照を使わない場合は `--no-prompt-s1` で指定できます。
+
+生成履歴のリサンプルと音声トークンキャッシュはGPU上で扱い、対話生成後にCPUへ移します。
+ターンWAVとmanifestはVAP配置前に保存し、同じ入力・設定で再実行すると再利用します。
+CPU/GPUやPBSの使い方は[合成方式とバッチ実行](docs/dataset-synthesis.md)を参照してください。
+
 ## 必要なモデルとアクセス権
 
 GitHubから取得できるのは推論コードだけです。実行時には次のモデルが必要です。
@@ -78,13 +90,13 @@ uv run hf auth login  # モデルがprivateの間だけ
 ```
 
 ```bash
-# 基本: Zoom1統計による間・重なり・相槌
+# 標準: Kyoto VAPの通常ターン配置と台本内相槌配置
 uv run zoom1-dialogue-tts examples/dialogue.txt -o out/dialogue.wav
 ```
 
 生成物:
 
-- `out/dialogue.wav`: Zoom1風の間・重なり・相槌を含むステレオ音声
+- `out/dialogue.wav`: VAP配置した通常ターンと台本内相槌を含むステレオ音声
 - `out/dialogue.manifest.json`: 各ターンと境界の開始時刻、FTO、相槌、VAP診断ファイル
 - `out/dialogue_turns/`: 後処理前のターン別音声
 
@@ -99,8 +111,8 @@ uv run zoom1-dialogue-tts examples/dialogue.txt -o out/dialogue.wav \
   --prompt-s2 voice_s2.wav "参照音声の書き起こし"
 ```
 
-参照音声を省略した場合は、モデルが生成する話者音色を使います。相槌は各話者の最初の生成
-ターンを声の参照として再合成するため、聞き手と同じ音色になります。
+参照音声を省略した場合は、同梱のS1参照音声を使用します。`--no-prompt-s1` で参照なしにできます。
+標準設定は台本内相槌の元音声を配置します。追加相槌の再合成は `--backchannels stat/vap` を明示した場合だけです。
 
 参照音声が相手話者の生成へ直接影響するのを避けたい場合は、参照を指定話者の最初のターン
 だけに適用できます。その後は、最初に生成したターンを含む通常の対話履歴だけを使用します。
@@ -131,10 +143,10 @@ uv run zoom1-dialogue-tts \
 
 ## 相槌タイミング
 
-既定の`stat`モードは、Zoom1の相槌頻度（約3.1回/分）に基づいて長い発話へ相槌を配置します。
+追加相槌を明示的に有効にする`stat`モードは、Zoom1の相槌頻度（約3.1回/分）に基づいて長い発話へ相槌を配置します。
 
 ```bash
-# 既定
+# 追加相槌を有効化
 uv run zoom1-dialogue-tts examples/dialogue.txt -o out/stat.wav \
   --backchannels stat --bc-per-minute 3.1
 
@@ -151,7 +163,7 @@ uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap.wav \
 ```
 
 VAP検出器はMaAIとPyAudioの環境制約があるため、本パッケージの標準依存には含めていません。
-まず統計配置で利用でき、VAP環境がある場合だけ予測JSONを差し替えられる構成です。
+標準方式にはVAP環境が必要です。VAPを使わない実験では `--turn-timing stat` または `none` を指定できます。
 
 ## ターン交替タイミング
 
@@ -165,7 +177,7 @@ MaAIはFireRedTTS-2と依存関係が異なるため、初回だけ別環境を�
 
 ```bash
 uv venv --python 3.12 .venv-vap
-uv pip install --python .venv-vap/bin/python --no-deps maai
+uv pip install --python .venv-vap/bin/python --no-deps maai==0.2.13
 uv pip install --python .venv-vap/bin/python \
   torch torchaudio numpy soundfile librosa einops rich matplotlib scipy \
   transformers==5.5.3 huggingface-hub pygame
@@ -186,7 +198,7 @@ FireRedTTS-2による各ターンの生成は1回だけです。生成後にタ�
 `vap-auto`では、台本内の割り込み相槌を通常のSHIFT/HOLD判定から除外し、MaAIの相槌専用
 `bc`モデルが出す`p_bc`のピークへ配置します。解析音声から相槌自体を除くため、モデルが
 すでに鳴った相槌を見てしまうリークも避けます。後処理で新しい相槌を追加しない運用では、
-既定の統計相槌を止める`--backchannels none`も指定します。
+追加相槌を止める`--backchannels none`も指定します。
 
 ```bash
 uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_dialogue.wav \
@@ -200,7 +212,7 @@ uv run zoom1-dialogue-tts examples/dialogue.txt -o out/vap_dialogue.wav \
 ターンです。独立応答としての「そうですね。」は通常ターンのまま残します。台本上の直前位置を
 アンカーとし、その前後`0.6`秒で`p_bc`最大の100 msフレームを選びます。`p_bc`はチャネル
 非対称なので、左右を入れ替えた解析も行い、アンカー近傍の平均スコアが高い順序を自動採用します。
-`bc_2type`のreact/emo予測もmanifestの診断情報へ保存します。
+配置に使わない `bc_2type` 推論は標準経路では実行しません。任意の診断には `bc_cli --modes bc_2type` を使えます。
 
 従来の固定FTOが必要な場合は、後方互換モードを明示できます。
 
@@ -250,7 +262,7 @@ uv run zoom1-dialogue-tts examples/dialogue.txt --variant keep -o out/keep.wav
 
 ## 入力形式
 
-`.txt`、`.json`、`.jsonl`に対応します。話者はS1とS2のみです。
+`.txt`、`.json`、`.jsonl`に対応します。JSON/JSONLではA/BをS1/S2へ変換します。
 
 ```json
 {
@@ -302,8 +314,8 @@ FireRedTTS-2の学習コード、デモ、Docker資産は同梱しません。�
 - `vap-auto`は1コマンドですが、内部ではFireRedTTS-2生成後に別環境のMaAIを実行します。
 - 参照声には、本人の同意と利用許諾がある音声だけを使用してください。
 - 1ターンの既定生成上限は30秒です。対話全体もLLM系列長`3100`トークンに制約され、過去の
-  音声トークンが累積するため、約3分を超える台本ではコンテキスト上限に達する可能性があります。
-  長時間対話にはsliding contextまたは区間分割が必要です。
+  音声トークンが累積するため、上限に達した場合は最古の生成履歴から外すsliding contextを使います。
+  外した履歴数はターンmanifestに記録します。
 
 ## 開発
 
