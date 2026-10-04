@@ -11,4 +11,6 @@ packaging includes that module.
 The default model checkpoint is hosted separately at:
 https://huggingface.co/llm-jp/zoom1-dialogue-tts
 
-No Zoom1 source audio or speaker prompt audio is distributed in this repository.
+The existing S1 speaker prompt is distributed as references/turn000_S1.wav.
+Use it only within the permission applicable to that recording; code licensing
+does not grant rights to model weights or reference audio.

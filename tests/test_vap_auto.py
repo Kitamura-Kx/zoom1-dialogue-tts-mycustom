@@ -32,7 +32,9 @@ def test_auto_vap_writes_analysis_and_invokes_external_python(tmp_path, monkeypa
         generated, tmp_path / "dialogue.wav", "vap-python", "cpu", 200.0
     )
     assert timing[0]["offset_ms"] == -120.0
-    assert (tmp_path / artifacts["analysis_wav"]).is_file()
+    import torchaudio
+    wave, rate = torchaudio.load(str(tmp_path / artifacts["analysis_wav"]))
+    assert rate == 16000 and wave.shape[0] == 2
     manifest = json.loads((tmp_path / artifacts["analysis_manifest"]).read_text())
     assert [turn["onset"] for turn in manifest["turns"]] == [0.0, 0.1]
 
@@ -49,6 +51,7 @@ def test_auto_backchannel_vap_excludes_interjection_and_uses_p_bc(tmp_path, monk
 
     def fake_run(command, check, env, **kwargs):
         if command[2] == "zoom1_dialogue_tts.bc_cli":
+            assert "bc_2type" not in command
             frames = [{"time": 0.8, "p_bc": 0.9}, {"time": 1.1, "p_bc": 0.2}]
             type_frames = [
                 {"time": 0.8, "p_bc_react": 0.8, "p_bc_emo": 0.1},
@@ -75,3 +78,20 @@ def test_auto_backchannel_vap_excludes_interjection_and_uses_p_bc(tmp_path, monk
     manifest = json.loads((tmp_path / artifacts["analysis_manifest"]).read_text())
     assert [turn["original_index"] for turn in manifest["turns"]] == [0, 2]
     assert artifacts["scripted_backchannel_count"] == 1
+
+
+def test_without_interjections_runs_only_kyoto_vap(tmp_path, monkeypatch):
+    generated = [
+        {'index': 0, 'speaker': '[S1]', 'channel': 0, 'text': 'こんにちは。', 'audio': torch.zeros(24000)},
+        {'index': 1, 'speaker': '[S2]', 'channel': 1, 'text': 'どうも。', 'audio': torch.zeros(24000)},
+    ]
+    def fake_run(command, **kwargs):
+        assert command[command.index('--modes') + 1:command.index('--device')] == ['vap']
+        Path(command[4]).write_text(json.dumps({'vap': [
+            {'time': 0.8, 'p_now': [0.6, 0.4], 'p_future': [0.6, 0.4]},
+        ]}))
+    monkeypatch.setattr('zoom1_dialogue_tts.synthesis.subprocess.run', fake_run)
+    onsets, boundaries, artifacts = _auto_backchannel_vap_timing(
+        generated, tmp_path / 'dialogue.wav', 'vap-python', 'cpu', TimingConfig())
+    assert onsets[0] == 0 and onsets[1] >= 24000
+    assert artifacts['scripted_backchannel_count'] == 0

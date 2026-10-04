@@ -6,7 +6,7 @@ from pathlib import Path
 
 BASE_MODEL_ID = "FireRedTeam/FireRedTTS2"
 BASE_MODEL_REVISION = "4af3f5cc4963373b86b52d750220d4de85261f05"
-DEFAULT_MODEL_REVISION = "6db72884d658e1fa8872adb79de6216100da77d0"
+DEFAULT_MODEL_REVISION = "aa9ad6cb9b03588deaeeb1c0611d455317855776"
 DEFAULT_MODEL_ID = os.environ.get(
     "ZOOM1_TTS_MODEL_ID", "llm-jp/zoom1-dialogue-tts"
 )

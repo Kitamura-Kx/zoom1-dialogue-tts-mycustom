@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 from unittest.mock import patch
 
 import pytest
@@ -6,23 +7,24 @@ import pytest
 from zoom1_dialogue_tts.cli import main
 
 
+@patch("zoom1_dialogue_tts.cli.sha256", return_value="source-hash")
 @patch("zoom1_dialogue_tts.cli.synthesize")
 @patch("zoom1_dialogue_tts.cli.load_script")
 @patch("zoom1_dialogue_tts.cli.load_synthesis_model")
 @patch("zoom1_dialogue_tts.cli.resolve_model")
-def test_batch_loads_model_once(resolve_model, load_model, load_script, synthesize):
+def test_batch_loads_model_once(resolve_model, load_model, load_script, synthesize, source_hash):
     resolve_model.return_value = Path("/models/assembled")
     model = object()
     load_model.return_value = model
     synthesize.side_effect = lambda **kwargs: kwargs["output_path"]
 
-    main([
+    main(["--vap-python", sys.executable,
         "--batch", "first.txt", "out/first.wav",
         "--batch", "second.txt", "out/second.wav",
         "--prompt-s1", "voice.wav", "書き起こし",
     ])
 
-    load_model.assert_called_once_with(Path("/models/assembled"))
+    load_model.assert_called_once_with(Path("/models/assembled"), use_bf16=True)
     assert load_script.call_count == 2
     assert [call.args[0] for call in load_script.call_args_list] == [
         "first.txt", "second.txt",
@@ -37,12 +39,13 @@ def test_batch_loads_model_once(resolve_model, load_model, load_script, synthesi
 
 def test_cli_passes_first_turn_prompt_scope():
     with (
+        patch("zoom1_dialogue_tts.cli.sha256", return_value="source-hash"),
         patch("zoom1_dialogue_tts.cli.resolve_model", return_value=Path("/models/assembled")),
         patch("zoom1_dialogue_tts.cli.load_synthesis_model", return_value=object()),
         patch("zoom1_dialogue_tts.cli.load_script", return_value=[]),
         patch("zoom1_dialogue_tts.cli.synthesize", return_value=Path("out/test.wav")) as synthesize,
     ):
-        main(["input.txt", "--prompt-scope", "first-turn"])
+        main(["input.txt", "--vap-python", sys.executable, "--prompt-scope", "first-turn"])
 
     assert synthesize.call_args.kwargs["prompt_scope"] == "first-turn"
 
